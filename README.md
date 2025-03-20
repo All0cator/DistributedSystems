@@ -1,4 +1,7 @@
 # Delivery App - Distributed Systems
+```
+git clone https://github.com/All0cator/DistributedSystems.git
+```
 ![alt text](resources/DeliveryImage.png)
 
 ## **Part 1:**
