@@ -1,9 +1,12 @@
 # Delivery App - Distributed Systems
-![alt text](resources/DeliveryImage.png)
 
-## **Part 1:**
+
+
+![alt text](src/main/resources/DeliveryImage.png)
+
+## **Installation**
 
 ### Backend Architecture
 
-![alt text](resources/BackendArchitecture.png)
+![alt text](src/main/resources/BackendArchitecture.png)
 (diagram from project description)

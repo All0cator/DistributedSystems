@@ -1,3 +1,5 @@
+package SocketsExample;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -46,6 +48,8 @@ public class Client extends Thread {
             Test t = (Test)iStream.readObject();
 
             System.out.println("Server: " + t.getA() + " " + t.isFlag());
+
+            socket.close();
 
         } catch(IOException e){
             throw new RuntimeException(e);

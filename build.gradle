@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.json:json:20250107'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'org.json:json:20250107' // Explicitly force this version
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+task printRuntimeClasspath {
+    doLast {
+        println sourceSets.main.runtimeClasspath.files
+    }
+}
+
+// SocketsExample
+
+task runServerSocketsExample(type: JavaExec) {
+    group = 'SocketsExample'
+    description = 'Runs Server'
+    main = 'SocketsExample.Server'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runClientSocketsExample(type: JavaExec) {
+    group = 'SocketsExample'
+    description = 'Runs Client'
+    main = 'SocketsExample.Client'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+// Delivery App
+
+task runCustomerApp(type: JavaExec) {
+    group = 'DeliveryApp'
+    description = 'Runs CustomerApp'
+    main = 'CustomerApp'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runManagerApp(type: JavaExec) {
+    group = 'DeliveryApp'
+    description = 'Runs ManagerApp'
+    main = 'ManagerApp'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runMaster(type: JavaExec) {
+    group = 'DeliveryApp'
+    description = 'Runs Master'
+    main = 'Master'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runWorker(type: JavaExec) {
+    group = 'DeliveryApp'
+    description = 'Runs Worker'
+    main = 'Worker'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runReducer(type: JavaExec) {
+    group = 'DeliveryApp'
+    description = 'Runs Reducer'
+    main = 'Reducer'
+    classpath = sourceSets.main.runtimeClasspath
+}
