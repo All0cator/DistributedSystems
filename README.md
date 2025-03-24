@@ -6,6 +6,35 @@
 
 ## **Installation**
 
+```
+ git clone https://github.com/All0cator/DistributedSystems.git
+```
+
+## **Build**
+### **Important before running anything**
+```
+./gradlew build
+```
+
+## **Run Master Reducer Worker**
+```
+./gradlew runMaster
+```
+```
+./gradlew runReducer
+```
+```
+./gradlew runWorker
+```
+
+## **Run Customer/Manager App**
+```
+./gradlew runCustomerApp
+```
+```
+./gradlew runManagerApp
+```
+
 ### Backend Architecture
 
 ![alt text](src/main/resources/BackendArchitecture.png)
