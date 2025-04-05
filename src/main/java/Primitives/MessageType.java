@@ -1,0 +1,11 @@
+package Primitives;
+
+public enum MessageType {
+    REGISTER_NODE,
+    HOST_DISCOVERY,
+    GET_TOTAL_COUNT,
+    MAP_TOTAL_COUNT,
+    REDUCE_TOTAL_COUNT,
+    TOTAL_COUNT_ARRIVAL,
+    GET_TOTAL_COUNT_RESPONSE
+};

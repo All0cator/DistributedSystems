@@ -64,34 +64,55 @@ task runClientSocketsExample(type: JavaExec) {
 task runCustomerApp(type: JavaExec) {
     group = 'DeliveryApp'
     description = 'Runs CustomerApp'
-    main = 'CustomerApp'
+    main = 'Nodes.CustomerApp'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task runManagerApp(type: JavaExec) {
     group = 'DeliveryApp'
     description = 'Runs ManagerApp'
-    main = 'ManagerApp'
+    main = 'Nodes.ManagerApp'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task runMaster(type: JavaExec) {
     group = 'DeliveryApp'
     description = 'Runs Master'
-    main = 'Master'
+    main = 'Nodes.Master'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task runWorker(type: JavaExec) {
     group = 'DeliveryApp'
     description = 'Runs Worker'
-    main = 'Worker'
+    main = 'Nodes.Worker'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task runReducer(type: JavaExec) {
     group = 'DeliveryApp'
     description = 'Runs Reducer'
-    main = 'Reducer'
+    main = 'Nodes.Reducer'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task debugMaster(type: JavaExec) {
+    group = 'Debug'
+    description = 'Debugs Master'
+    main = 'Nodes.Master'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task debugWorker(type: JavaExec) {
+    group = 'Debug'
+    description = 'Debugs Worker'
+    main = 'Nodes.Worker'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task debugReducer(type: JavaExec) {
+    group = 'Debug'
+    description = 'Debugs Reducer'
+    main = 'Nodes.Reducer'
     classpath = sourceSets.main.runtimeClasspath
 }
