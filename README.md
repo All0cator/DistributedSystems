@@ -40,37 +40,13 @@ Port Number of Master
 
 ## **Run Customer/Manager App**
 ```
-./gradlew runCustomerApp
+./gradlew runCustomerApp --args="localhost 8083 localhost 8080"
 ```
 ```
-./gradlew runManagerApp
+./gradlew runManagerApp --args="localhost 8084 localhost 8080"
 ```
 
 ### Backend Architecture
 
 ![alt text](src/main/resources/BackendArchitecture.png)
 (diagram from project description)
-
-Restaurant:
-
-StoreName
-Latitude
-Longitude
-FoodCategory
-Stars
-NoOfVotes
-StoreLogo
-ArrayList<Product>
-
-Restaurant to JSONObject
-JSONObject to Restaurant
-
-Product:
-
-ProductName
-ProductType
-AvailableAmount
-Price
-
-Product to JSONObject
-JSONObject to Product
