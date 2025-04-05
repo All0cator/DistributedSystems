@@ -31,12 +31,13 @@ public class RequestPool {
         }
         this.size++;
 
-        while(this.pool[scanIndex].GetPort() < 0) {scanIndex = (scanIndex + 1) % this.maxSize;}
+        while(this.pool[scanIndex].GetPort() >= 0) {scanIndex = (scanIndex + 1) % this.maxSize;}
 
-        this.pool[scanIndex] = socketHostData; 
+        this.pool[scanIndex] = socketHostData;
+        int result = scanIndex;
         scanIndex = (scanIndex + 1) % this.maxSize;
 
-        return scanIndex;
+        return result;
     }
 
     public synchronized HostData ReturnID(int id) {

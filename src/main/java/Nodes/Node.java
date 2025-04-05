@@ -12,7 +12,6 @@ import Primitives.HostData;
 import Primitives.Message;
 import Primitives.MessageType;
 import Primitives.Payloads.HostDataPayload;
-import Primitives.Payloads.HostDiscoveryRequestMasterPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 
 public abstract class Node extends Thread {
@@ -67,33 +66,6 @@ public abstract class Node extends Thread {
 
         TerminateServerConnection();
     }
-
-    /*protected HostData QueryHostData(HostData masterHostData, HostDiscoveryRequestMasterPayload payload) {
-        try {
-            Socket masterConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
-
-            ObjectOutputStream oStream = new ObjectOutputStream(masterConnection.getOutputStream()); 
-            ObjectInputStream iStream = new ObjectInputStream(masterConnection.getInputStream());
-
-            Message message = new Message();
-            message.type = MessageType.HOST_DISCOVERY;
-            message.payload = payload;
-
-            // Send HostDiscoveryPayload
-            oStream.writeObject(message);
-            oStream.flush();
-            // Receive HostDataPayload
-
-            Message messageIn = (Message)iStream.readObject();
-            HostDataPayload pHostData = (HostDataPayload)messageIn.payload;
-
-            return pHostData.hostData;
-        } catch (IOException e) {
-            throw new RuntimeException();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException();
-        }
-    }*/
 
     private void TerminateServerConnection() {
         try {

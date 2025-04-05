@@ -6,6 +6,8 @@ import java.net.Socket;
 import Nodes.ManagerApp;
 import Nodes.Node;
 import Primitives.Message;
+import Primitives.MessageType;
+import Primitives.Payloads.GetTotalCountResponsePayload;
 
 public class ActionsForManagerApp extends ActionsForNode{
     private ManagerApp managerApp;
@@ -30,6 +32,9 @@ public class ActionsForManagerApp extends ActionsForNode{
             Message message = (Message)iStream.readObject();
 
             switch (message.type) {
+                case MessageType.GET_TOTAL_COUNT_RESPONSE:
+
+                    System.out.println("Total Count is: " + ((GetTotalCountResponsePayload)message.payload).totalCount);
                 default:
                     break;
             }

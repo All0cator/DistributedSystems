@@ -3,14 +3,16 @@ package Actions;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import Nodes.Node;
 import Primitives.HostData;
 import Primitives.Message;
 import Primitives.MessageType;
 import Primitives.Payloads.HostDataPayload;
-import Primitives.Payloads.HostDiscoveryRequestMasterPayload;
+import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.RegistrationPayload;
 
 public abstract class ActionsForNode implements Runnable {
@@ -33,6 +35,27 @@ public abstract class ActionsForNode implements Runnable {
 
     public ActionsForNode() {
         
+    }
+
+    public void GetTotalCount(HostData masterHostData, HostData nodeHostData) {
+        try {
+
+            Socket nodeConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
+
+            ObjectOutputStream oStream = new ObjectOutputStream(nodeConnection.getOutputStream()); 
+            ObjectInputStream iStream = new ObjectInputStream(nodeConnection.getInputStream());
+
+            Message message = new Message();
+            message.type = MessageType.GET_TOTAL_COUNT;
+            HostDataPayload pHostData = new HostDataPayload();
+            message.payload = pHostData;
+            pHostData.hostData = nodeHostData;
+
+            oStream.writeObject(message);
+            oStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        } 
     }
 
     public void RegisterNodeToMaster(HostData masterHostData, RegistrationPayload payload) {

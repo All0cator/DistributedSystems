@@ -22,17 +22,14 @@ public class Master extends Node{
         this.reducerHostData = new HostData("", -1);
     }
 
-    public synchronized void RegisterWorker(HostData workerHostData) {
+    public synchronized int RegisterWorker(HostData workerHostData) {
         workerHostDatas.add(workerHostData);
-        for(int i = 0; i < this.workerHostDatas.size(); ++i) {
-            System.out.println(this.workerHostDatas.get(i).GetHostIP() + Integer.toString(this.workerHostDatas.get(i).GetPort()));
-        }
+        return workerHostDatas.size() - 1;
     }
 
 
     public synchronized void RegisterReducer(HostData reducerHostData) {
         this.reducerHostData = reducerHostData;
-        System.out.println(this.reducerHostData.GetHostIP() + Integer.toString(this.reducerHostData.GetPort()));
     }
 
     // Immutable State snapshot 
@@ -51,7 +48,6 @@ public class Master extends Node{
     public static void main(String[] args) {
         if(args.length != 2) return;
         
-        System.out.println("Master Run!");
 
         new Master(args[0], Integer.parseInt(args[1])).start();
     }

@@ -2,6 +2,7 @@ package Nodes;
 
 import Actions.ActionsForCustomerApp;
 import Primitives.HostData;
+import Primitives.Payloads.RegistrationPayload;
 
 public class CustomerApp extends Node {
 
@@ -16,5 +17,10 @@ public class CustomerApp extends Node {
         super(hostIP, port);
         this.actions = new ActionsForCustomerApp();
         this.masterHostData = new HostData(masterHostIP, masterPort);
+    }
+
+    @Override
+    public void Start() {
+        this.actions.GetTotalCount(masterHostData, hostData);
     }
 }

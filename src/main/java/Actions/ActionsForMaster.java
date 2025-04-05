@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import Primitives.*;
 import Primitives.Payloads.GetTotalCountResponsePayload;
 import Primitives.Payloads.HostDataPayload;
-import Primitives.Payloads.HostDiscoveryRequestMasterPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.MapTotalCountPayload;
 import Primitives.Payloads.RegistrationPayload;
 import Primitives.Payloads.TotalCountArrivalPayload;
+import Primitives.Payloads.WorkerRegistrationPayload;
 import Nodes.Master;
 import Nodes.Node;
 
@@ -43,7 +43,23 @@ public class ActionsForMaster extends ActionsForNode {
                 case MessageType.REGISTER_NODE:
 
                     if(((RegistrationPayload)message.payload).isWorkerNode) {
-                        master.RegisterWorker(((RegistrationPayload)message.payload).hostData);
+
+                        HostData workerHostData = ((RegistrationPayload)message.payload).hostData;
+
+                        int workerID = master.RegisterWorker(workerHostData);
+
+                        Socket workerConnection = new Socket(workerHostData.GetHostIP(), workerHostData.GetPort());
+
+                        ObjectOutputStream sOStream = new ObjectOutputStream(workerConnection.getOutputStream());
+                        
+                        Message registrationReply = new Message();
+                        registrationReply.type = MessageType.REGISTER_NODE;
+                        WorkerRegistrationPayload pWorker = new WorkerRegistrationPayload();
+                        registrationReply.payload = pWorker;
+                        pWorker.workerID = workerID;
+
+                        sOStream.writeObject(registrationReply);
+                        sOStream.flush();
                     }
                     else {
                         master.RegisterReducer(((RegistrationPayload)message.payload).hostData);
@@ -51,8 +67,9 @@ public class ActionsForMaster extends ActionsForNode {
                     break;
             
                 case MessageType.GET_TOTAL_COUNT:
-                    HostDataPayload p = (HostDataPayload)message.payload;
-                    int mapID = master.requestPool.GetID(new HostData(connectionSocket.getInetAddress().getHostAddress(), connectionSocket.getPort()));
+                    HostData replyHostData = ((HostDataPayload)message.payload).hostData;
+
+                    int mapID = master.requestPool.GetID(new HostData(replyHostData.GetHostIP(), replyHostData.GetPort()));
 
                     ArrayList<HostData> workerHostDatas = master.GetWorkerHostDatas();
 
@@ -60,6 +77,8 @@ public class ActionsForMaster extends ActionsForNode {
                     mapMessage.type = MessageType.MAP_TOTAL_COUNT;
                     MapTotalCountPayload pTotalCount = new MapTotalCountPayload();
                     pTotalCount.mapID = mapID;
+                    pTotalCount.numWorkers = workerHostDatas.size();
+                    mapMessage.payload = pTotalCount;
                     
                     for(HostData hostData : workerHostDatas) {
 
@@ -74,14 +93,14 @@ public class ActionsForMaster extends ActionsForNode {
                     
                 case MessageType.TOTAL_COUNT_ARRIVAL:
                     HostData responseHostData = master.requestPool.ReturnID(((TotalCountArrivalPayload)message.payload).mapID);
-                    
+
                     Message result = new Message();
                     result.type = MessageType.GET_TOTAL_COUNT_RESPONSE;
 
                     GetTotalCountResponsePayload pTotalCountResponse = new GetTotalCountResponsePayload();
                     pTotalCountResponse.totalCount = ((TotalCountArrivalPayload)message.payload).totalCount;
 
-                    result.payload = (Object)pTotalCountResponse;
+                    result.payload = pTotalCountResponse;
 
                     Socket responseSocket = new Socket(responseHostData.GetHostIP(), responseHostData.GetPort());
                     ObjectOutputStream oStreamResponse = new ObjectOutputStream(responseSocket.getOutputStream());
@@ -91,7 +110,7 @@ public class ActionsForMaster extends ActionsForNode {
                     break;
                     
                 case MessageType.HOST_DISCOVERY:
-                    HostDiscoveryRequestMasterPayload pHostDiscoveryRequestMaster = (HostDiscoveryRequestMasterPayload)message.payload;
+                    HostDiscoveryRequestPayload pHostDiscoveryRequestMaster = (HostDiscoveryRequestPayload)message.payload;
                     
                     Message reply = new Message();
                     reply.type = MessageType.HOST_DISCOVERY;
@@ -101,42 +120,13 @@ public class ActionsForMaster extends ActionsForNode {
                     Message getHostData = new Message();
                     getHostData.type = MessageType.HOST_DISCOVERY;
 
-                    if(pHostDiscoveryRequestMaster.isReducer) {
-                        HostData reducerHostData = master.GetReducerHostData();
-
-                        if(reducerHostData.GetPort() >= 0) {
-                            Socket s = new Socket(reducerHostData.GetHostIP(), reducerHostData.GetPort());
-
-                            ObjectOutputStream sOStream = new ObjectOutputStream(s.getOutputStream());
-                            ObjectInputStream sIStream = new ObjectInputStream(s.getInputStream());
-
-                            sOStream.writeObject(getHostData);
-                            sOStream.flush();
-
-                            Message hostData = (Message)sIStream.readObject();
-                            pHostDataPayload.hostData = ((HostDataPayload)hostData.payload).hostData;
-
-                            // TODO socket memory leak close socket after reading object using while loop
-                        }
-                        else {
-                            pHostDataPayload.hostData = new HostData("", -1);
-                        }
+                    if(!pHostDiscoveryRequestMaster.isWorkerNode) {
+                        pHostDataPayload.hostData = master.GetReducerHostData();
                     }
                     else{
                         ArrayList<HostData> workersHostDatas2 = master.GetWorkerHostDatas();
-                        if(pHostDiscoveryRequestMaster.index > 0 && pHostDiscoveryRequestMaster.index < workersHostDatas2.size()) {
-                            HostData workerHostData = workersHostDatas2.get(pHostDiscoveryRequestMaster.index);
-
-                            Socket s = new Socket(workerHostData.GetHostIP(), workerHostData.GetPort());
-
-                            ObjectOutputStream sOStream = new ObjectOutputStream(s.getOutputStream());
-                            ObjectInputStream sIStream = new ObjectInputStream(s.getInputStream());
-
-                            sOStream.writeObject(getHostData);
-                            sOStream.flush();
-
-                            Message hostData = (Message)sIStream.readObject();
-                            pHostDataPayload.hostData = ((HostDataPayload)hostData.payload).hostData;
+                        if(pHostDiscoveryRequestMaster.index >= 0 && pHostDiscoveryRequestMaster.index < workersHostDatas2.size()) {
+                            pHostDataPayload.hostData = workersHostDatas2.get(pHostDiscoveryRequestMaster.index);
                         }
                         else {
                             pHostDataPayload.hostData = new HostData("", -1);
