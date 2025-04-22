@@ -1,0 +1,30 @@
+{
+    "StoreName": "L'Artigiano",
+    "Latitude": 37.96825113018884,
+    "Longitude": 23.731583145561125,
+    "FoodCategory": "pizzeria",
+    "Stars": 4.1,
+   "NoOfVotes": 506,
+    "StoreLogo": "src/main/resources/lartigiano_logo.png",
+   "Products": [
+   {
+    "ProductName": "margarita",
+   "ProductType": "pizza",
+   "Available Amount": 5000,
+    "Price": 9.2
+   },
+   {
+    "ProductName": "special",
+   "ProductType": "pizza",
+   "Available Amount": 1000,
+    "Price": 10
+   },
+   {
+    "ProductName": "gold pizza",
+   "ProductType": "pizza",
+   "Available Amount": 100,
+    "Price": 11
+   }
+    ]
+}
+   

@@ -1,0 +1,30 @@
+{
+    "StoreName": "Goody's",
+    "Latitude": 37.97492581618383,
+    "Longitude": 23.73430375206493,
+    "FoodCategory": "burger",
+    "Stars": 4,
+   "NoOfVotes": 2260,
+    "StoreLogo": "src/main/resources/goodys_logo.png",
+   "Products": [
+   {
+    "ProductName": "philly burger",
+   "ProductType": "burger",
+   "Available Amount": 1000,
+    "Price": 6
+   },
+   {
+    "ProductName": "hamburger",
+   "ProductType": "burger",
+   "Available Amount": 2000,
+    "Price": 4
+   },
+   {
+    "ProductName": "cheeseburger",
+   "ProductType": "burger",
+   "Available Amount": 100,
+    "Price": 3
+   }
+    ]
+}
+   
