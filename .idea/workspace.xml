@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="18092d2d-cb7c-46fd-b48d-19642f59ff87" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/gradle-daemon-jvm.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Actions/ActionsForCustomerApp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Actions/ActionsForManagerApp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Actions/ActionsForMaster.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Actions/ActionsForNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Actions/ActionsForReducer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Actions/ActionsForWorker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/CustomerApp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/ManagerApp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Master.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Node.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Reducer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Nodes/Worker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/AtomicF.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/AtomicI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/HostData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Message.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/MessageType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/GetTotalCountResponsePayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/HostDataPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/HostDiscoveryRequestPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/MapTotalCountPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/ReduceTotalCountPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/RegistrationPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/TotalCountArrivalPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/Payloads/WorkerRegistrationPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/ReductionCompletionData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Primitives/RequestPool.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SocketsExample/ActionsForClients.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SocketsExample/Client.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SocketsExample/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SocketsExample/Server.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SocketsExample/Test.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/BackendArchitecture.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/DeliveryImage.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/diagrams.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/goodys.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/goodys_logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/jackaroo.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/jackaroo_logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/lartigiano.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/lartigiano_logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mcdonalds.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mcdonalds_logo.png" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2wGSIecZA5BRlPADq68yZN2CF3W" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="18092d2d-cb7c-46fd-b48d-19642f59ff87" name="Changes" comment="" />
+      <created>1745666346574</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1745666346574</updated>
+    </task>
+    <servers />
+  </component>
+</project>
