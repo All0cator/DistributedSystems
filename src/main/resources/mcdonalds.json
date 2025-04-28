@@ -2,14 +2,14 @@
     "StoreName": "McDonalds",
     "Latitude": 37.97598967702126,
     "Longitude": 23.73376888993907,
-    "FoodCategory": "burger",
+    "FoodCategory": "fast food",
     "Stars": 3.9,
    "NoOfVotes": 11987,
     "StoreLogo": "src/main/resources/mcdonalds_logo.png",
    "Products": [
    {
     "ProductName": "cheeseburger",
-   "ProductType": "pizza",
+   "ProductType": "burger",
    "Available Amount": 5000,
     "Price": 1
    },

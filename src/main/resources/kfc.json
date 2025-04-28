@@ -1,0 +1,29 @@
+{
+    "StoreName": "KFC",
+    "Latitude": 37.97543033551282, 
+    "Longitude": 23.73355401867602,
+    "FoodCategory": "fast food",
+    "Stars": 3.9,
+   "NoOfVotes": 4885,
+    "StoreLogo": "src/main/resources/kfc_logo.png",
+   "Products": [
+   {
+    "ProductName": "hot bucket",
+   "ProductType": "wings",
+   "Available Amount": 4000,
+    "Price": 10.85
+   },
+   {
+    "ProductName": "kentucky buckets",
+   "ProductType": "chicken",
+   "Available Amount": 1050,
+    "Price": 10.85
+   },
+   {
+    "ProductName": "fried potatoes",
+   "ProductType": "potatoes",
+   "Available Amount": 6000,
+    "Price": 4
+   }
+    ]
+}
