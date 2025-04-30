@@ -1,5 +1,7 @@
 package Primitives;
 
+import java.util.ArrayList;
+
 public class Store {
     private String name;
     private double latitude;
@@ -8,10 +10,10 @@ public class Store {
     private double stars;
     private int noOfVotes;
     private String storeLogo;
-    private Product[] products;
+    private ArrayList<Product> products;
     
     public Store(String name, double latitude, double longitude, String foodCategory, 
-        double stars, int noOfVotes, String storeLogo, Product[] products)
+        double stars, int noOfVotes, String storeLogo, ArrayList<Product> products)
     {
         this.name = name;
         this.latitude = latitude;
@@ -44,7 +46,7 @@ public class Store {
     public String getStoreLogo() {
         return storeLogo;
     }
-    public Product[] getProducts() {
+    public ArrayList<Product> getProducts() {
         return products;
     }
 }

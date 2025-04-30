@@ -1,10 +1,20 @@
 package Nodes;
 
+import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import Actions.ActionsForManagerApp;
 import Primitives.HostData;
 import Primitives.Payloads.RegistrationPayload;
+
+import Primitives.Product;
+import Primitives.Store;
+import java.util.ArrayList;
 
 public class ManagerApp extends Node {
     private HostData masterHostData;
@@ -29,8 +39,38 @@ public class ManagerApp extends Node {
             int choice = scanner.nextInt();
 
             switch (choice) {
-                case 1:
-                    // Code to add a new employee
+                case 1: //we supose that the json file has the proper format
+                    try {//in case the file is not found or not a json file
+                        // Code to add a new store
+                        System.out.println("Enter the json file (or the path to it):");
+                        String input = scanner.nextLine();
+                        String jsonFile = new String(Files.readAllBytes(Paths.get(input)));
+                        
+                        JSONObject obj = new JSONObject(jsonFile);
+                        JSONArray products = obj.getJSONArray("Products");
+
+                        ArrayList<Product> productList = new ArrayList<>();
+                        for (Object p : products) {//creating the product list
+                            JSONObject product = (JSONObject) p;
+
+                            String name = (String) product.get("ProductName");
+                            String type = (String) product.get("ProductType");
+                            String avbamount = (String) product.get("AvailableAmount");
+                            String price = (String) product.get("Price");
+
+                            productList.add(new Product(name, type, Integer.parseInt(avbamount), 
+                                                Double.parseDouble(price)));
+                        }
+
+                        //create store, i will handle it later
+                        Store store = new Store(obj.getString("StoreName"), obj.getDouble("Latitude"), 
+                                        obj.getDouble("Longitude"), obj.getString("FoodCategory"), 
+                                        obj.getDouble("Stars"), obj.getInt("NoOfVotes"), 
+                                        obj.getString("StoreLogo"), productList);
+                        
+                    } catch (Exception e) {
+                        System.out.println("Error reading the file: " + e.getMessage());
+                    }
                     break;
                 case 2:
                     // Code to view all employees
