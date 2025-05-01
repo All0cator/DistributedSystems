@@ -49,4 +49,10 @@ public class Store {
     public ArrayList<Product> getProducts() {
         return products;
     }
+
+    @Override
+    public String toString() {
+        return this.getName() + " | " + this.getFoodCategory() + " | " + this.getStars();
+    }
+
 }
