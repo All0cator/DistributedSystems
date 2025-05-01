@@ -27,8 +27,6 @@ public class CustomerApp extends Node {
             System.out.println("2. Filter Stores by Food Categories");
             System.out.println("3. Filter Stores by Stars");
             System.out.println("4. Filter Stores by Price Range ($, $$, $$$)");
-            System.out.println("5. Purchase Products");
-            System.out.println("6. Rate Stores (1-5 Stars)");
 
             Scanner scanner = new Scanner(System.in);
             int choice = scanner.nextInt();
@@ -101,7 +99,12 @@ public class CustomerApp extends Node {
                         System.out.println("Exiting to store list.");
                         break store_menu;
                     } else if (choice == 1) {
-                        ArrayList<Product> products = chosenStore.getProducts();
+                        ArrayList<Product> products = new ArrayList<>();
+                        for (Product product : chosenStore.getProducts()) {
+                            if (product.isAvailable()) {
+                                products.add(product);
+                            }
+                        }
                         ArrayList<Product> basketProducts = new ArrayList<>();
                         ArrayList<Integer> basketAmounts = new ArrayList<>();
                         product_list:
@@ -116,7 +119,7 @@ public class CustomerApp extends Node {
 
                             choice = scanner.nextInt();
 
-                            if (choice > products.size() || choice < 0) {
+                            if (choice > products.size() + 1 || choice < 0) {
                                 System.out.println("Invalid input.");
                                 continue product_list;
                             } else if (choice == 0) {
@@ -161,8 +164,8 @@ public class CustomerApp extends Node {
                                                 System.out.println("Exiting to basket.");
                                                 break;
                                             } else {
-                                                basketProducts.remove(choice-1);
-                                                basketAmounts.remove(choice-1);
+                                                basketProducts.remove(choice - 1);
+                                                basketAmounts.remove(choice - 1);
                                             }
                                         }
                                     } else {
