@@ -25,11 +25,16 @@ public class Product {
     public double getPrice() {
         return price;
     }
-    public void removeAmount(int amount) {//for when a user buys a product
+    public void removeAmount(int amount) throws Exception {//for when a user buys a product
         if (amount <= availableAmount) {
             availableAmount -= amount;
         } else {
-            System.out.println("Not enough stock available.");
+//            System.out.println("Not enough stock available.");
+            throw new Exception("Not enough stock available.");
         }
+    }
+
+    public String toString() {
+        return this.getProductName() + " | " + this.getProductType() + " | " + this.getPrice() + (this.getAvailableAmount() == 0 ? " | UNAVAILABLE" : "");
     }
 }
