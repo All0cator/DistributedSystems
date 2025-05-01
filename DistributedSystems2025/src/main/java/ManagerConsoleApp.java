@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import Primitives.Product;
+import Primitives.Store;
 
 public class ManagerConsoleApp {
     
@@ -59,7 +61,6 @@ public class ManagerConsoleApp {
                     } catch (Exception e) {
                         System.out.println("Error reading the file: " + e.getMessage());
                     }
-                    break;
                     break;
                 case 2:
                     // Code to view all employees
