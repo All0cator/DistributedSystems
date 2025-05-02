@@ -13,4 +13,8 @@ public class Worker extends Thread{
         }
     }
 
+    public static void main(String[] args) {
+        
+    }
+
 }
