@@ -19,6 +19,8 @@ import Primitives.Payloads.FilterMasterPayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.RegistrationPayload;
+import Primitives.Product;
+import Primitives.Store;
 
 public class CustomerApp extends Node {
 
@@ -32,7 +34,7 @@ public class CustomerApp extends Node {
     private static double latitude = 37.94448d;
     private static double longitude = 23.75171d;
     public static void main(String[] args) {
-        if(args.length != 4) return;
+        if (args.length != 4) return;
 
         CustomerApp app = new CustomerApp(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]));
 
