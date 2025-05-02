@@ -13,6 +13,7 @@ import Primitives.Message;
 import Primitives.MessageType;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
+import Primitives.Payloads.JSONStoresPayload;
 import Primitives.Payloads.RegistrationPayload;
 
 public abstract class ActionsForNode implements Runnable {

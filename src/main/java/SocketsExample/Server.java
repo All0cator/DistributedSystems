@@ -13,6 +13,5 @@ public class Server {
             ActionsForClients a = new ActionsForClients(inSocket);
             a.start();
         }
-        
     }
 }

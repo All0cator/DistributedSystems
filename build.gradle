@@ -66,6 +66,7 @@ task runCustomerApp(type: JavaExec) {
     description = 'Runs CustomerApp'
     main = 'Nodes.CustomerApp'
     classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in;
 }
 
 task runManagerApp(type: JavaExec) {
@@ -73,6 +74,7 @@ task runManagerApp(type: JavaExec) {
     description = 'Runs ManagerApp'
     main = 'Nodes.ManagerApp'
     classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in;
 }
 
 task runMaster(type: JavaExec) {

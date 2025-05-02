@@ -1,11 +1,15 @@
 package Nodes;
 
+import java.util.ArrayList;
+
 import Actions.ActionsForMaster;
 import Actions.ActionsForReducer;
 import Primitives.AtomicF;
 import Primitives.AtomicI;
+import Primitives.AtomicS;
 import Primitives.HostData;
 import Primitives.ReductionCompletionData;
+import Primitives.Store;
 import Primitives.Payloads.RegistrationPayload;
 
 public class Reducer extends Node{
@@ -13,6 +17,7 @@ public class Reducer extends Node{
     private HostData masterHostData;
 
     private AtomicF totalCounts[];
+    private AtomicS totalStores[];
     private AtomicI workersRemainingCounters[];
 
     public static void main(String[] args) {
@@ -27,9 +32,11 @@ public class Reducer extends Node{
         this.masterHostData = new HostData(masterHostIP, masterPort);
 
         this.totalCounts = new AtomicF[100];
+        this.totalStores = new AtomicS[100];
         this.workersRemainingCounters = new AtomicI[100];
         for(int i = 0; i < 100; ++i) {
             this.totalCounts[i] = new AtomicF();
+            this.totalStores[i] = new AtomicS();
             this.workersRemainingCounters[i] = new AtomicI();
             this.workersRemainingCounters[i].SetValue(-1);
         }
@@ -51,6 +58,32 @@ public class Reducer extends Node{
         this.workersRemainingCounters[mapID].SetValue(-1);
 
         return data;
+    }
+
+    public ArrayList<Store> StoreReductionCompletion(int mapID) {
+        if(this.workersRemainingCounters[mapID].GetValue() > 0) {
+            return null;
+        }
+
+        ArrayList<Store> stores = this.totalStores[mapID].GetValue();
+        this.totalStores[mapID].SetValue(new ArrayList<Store>());
+
+        this.workersRemainingCounters[mapID].SetValue(-1);
+
+        return stores;
+    }
+
+    public void Reduce(int mapID, int numWorkers, ArrayList<Store> totalStores) {
+        if(this.workersRemainingCounters[mapID].GetValue() == -1) {
+            this.workersRemainingCounters[mapID].SetValue(numWorkers);
+        }
+
+        for(int i = 0; i < totalStores.size(); ++i) {
+            this.totalStores[mapID].Add(totalStores.get(i));
+        }
+
+        // Finished with reduction of worker
+        this.workersRemainingCounters[mapID].Add(-1);
     }
  
     public void Reduce(int mapID, int numWorkers, float totalCount[]) {

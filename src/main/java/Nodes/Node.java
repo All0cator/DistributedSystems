@@ -40,6 +40,7 @@ public abstract class Node extends Thread {
     @Override
     public void run() {
         try {
+            // TODO: Change server socket to bind to correct IP address
             this.serverSocket = new ServerSocket(this.hostData.GetPort());
         } catch (IOException e) {
             throw new RuntimeException();

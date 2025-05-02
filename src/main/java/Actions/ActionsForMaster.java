@@ -7,11 +7,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import Primitives.*;
+import Primitives.Payloads.FilterMasterPayload;
+import Primitives.Payloads.FilterWorkerPayload;
+import Primitives.Payloads.FoodCategoriesPayload;
 import Primitives.Payloads.GetTotalCountResponsePayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.MapTotalCountPayload;
+import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.RegistrationPayload;
+import Primitives.Payloads.ResultPayload;
+import Primitives.Payloads.StoresPayload;
 import Primitives.Payloads.TotalCountArrivalPayload;
 import Primitives.Payloads.WorkerRegistrationPayload;
 import Nodes.Master;
@@ -57,6 +63,7 @@ public class ActionsForMaster extends ActionsForNode {
                         WorkerRegistrationPayload pWorker = new WorkerRegistrationPayload();
                         registrationReply.payload = pWorker;
                         pWorker.workerID = workerID;
+                        pWorker.jsonStores = this.master.GetStoresFromMemory(workerID); 
 
                         sOStream.writeObject(registrationReply);
                         sOStream.flush();
@@ -67,6 +74,7 @@ public class ActionsForMaster extends ActionsForNode {
                     break;
             
                 case MessageType.GET_TOTAL_COUNT:
+                {
                     HostData replyHostData = ((HostDataPayload)message.payload).hostData;
 
                     int mapID = master.requestPool.GetID(new HostData(replyHostData.GetHostIP(), replyHostData.GetPort()));
@@ -89,9 +97,11 @@ public class ActionsForMaster extends ActionsForNode {
                         workerOStream.writeObject(mapMessage);
                         workerOStream.flush();
                     }
-                    break;
+                }
+                break;
                     
                 case MessageType.TOTAL_COUNT_ARRIVAL:
+                {
                     HostData responseHostData = master.requestPool.ReturnID(((TotalCountArrivalPayload)message.payload).mapID);
 
                     Message result = new Message();
@@ -107,8 +117,24 @@ public class ActionsForMaster extends ActionsForNode {
 
                     oStreamResponse.writeObject(result);
                     oStreamResponse.flush();
-                    break;
-                    
+                } 
+                break;
+                case MessageType.TOTAL_STORES_ARRIVAL:
+                {
+                    HostData responseHostData = master.requestPool.ReturnID(((StoresPayload)message.payload).mapID);
+
+                    Message result = new Message();
+                    result.type = MessageType.FILTER;
+                    StoresPayload pStores = new StoresPayload();
+                    result.payload = (StoresPayload)message.payload;
+
+                    Socket responseSocket = new Socket(responseHostData.GetHostIP(), responseHostData.GetPort());
+                    ObjectOutputStream oStreamResponse = new ObjectOutputStream(responseSocket.getOutputStream());
+
+                    oStreamResponse.writeObject(result);
+                    oStreamResponse.flush();
+                }
+                break;
                 case MessageType.HOST_DISCOVERY:
                     HostDiscoveryRequestPayload pHostDiscoveryRequestMaster = (HostDiscoveryRequestPayload)message.payload;
                     
@@ -138,6 +164,100 @@ public class ActionsForMaster extends ActionsForNode {
                     this.oStream.flush();
 
                     break;
+                case MessageType.REFRESH:
+                {
+                    Message response = new Message();
+                    response.type = MessageType.REFRESH;
+                    FoodCategoriesPayload p = new FoodCategoriesPayload();
+                    response.payload = p;
+                    p.foodCategories = new ArrayList<String>();
+
+                    this.master.GetFoodCategories(p.foodCategories);
+
+                    HostData customerHostData = ((HostDataPayload)message.payload).hostData;
+
+                    Socket customerConnection = new Socket(customerHostData.GetHostIP(), customerHostData.GetPort());
+                    ObjectOutputStream oSStream = new ObjectOutputStream(customerConnection.getOutputStream());
+
+                    oSStream.writeObject(response);
+                    oSStream.flush();
+                }
+                break;
+                case MessageType.FILTER:
+                {
+                    // Create a new request and pass filters to workers
+                    FilterMasterPayload pFilter = (FilterMasterPayload)message.payload;
+                    
+                    int mapID = this.master.requestPool.GetID(pFilter.customerHostData);
+
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+                    
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.FILTER;
+                    FilterWorkerPayload pFilterWorker = new FilterWorkerPayload();
+                    workerMessage.payload = pFilterWorker;
+                    
+                    pFilterWorker.filter = pFilter.filter;
+                    pFilterWorker.mapID = mapID;
+                    pFilterWorker.numWorkers = workerHostDatas.size();
+                    pFilterWorker.customerLatitude = pFilter.customerLatitude;
+                    pFilterWorker.customerLongitude = pFilter.customerLongitude;
+
+                    for(HostData hostData : workerHostDatas) {
+                        Socket newConnection = new Socket(hostData.GetHostIP(), hostData.GetPort());
+
+                        ObjectOutputStream oStream = new ObjectOutputStream(newConnection.getOutputStream());
+
+
+                        oStream.writeObject(workerMessage);
+                        oStream.flush();
+                    }
+                    
+                }
+                break;
+                case MessageType.RATE:
+                {
+                    RatePayload pRate = (RatePayload)message.payload;
+
+                    Message rateMessage = new Message();
+                    rateMessage.type = MessageType.RATE;
+                    RatePayload pRateWorker = new RatePayload();
+                    rateMessage.payload = pRateWorker;
+
+                    pRateWorker.customerHostData = pRate.customerHostData;
+                    pRateWorker.noOfStars = pRate.noOfStars;
+                    pRateWorker.storeName = pRate.storeName;
+
+                    int workerID = this.master.StoreNameToWorkerID(pRate.storeName);
+                
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+
+                    HostData workerHostData = workerHostDatas.get(workerID);
+
+                    Socket workerConnection = new Socket(workerHostData.GetHostIP(), workerHostData.GetPort());
+
+                    ObjectOutputStream oSStream = new ObjectOutputStream(workerConnection.getOutputStream());
+
+                    oSStream.writeObject(rateMessage);
+                    oSStream.flush();
+
+                }
+                break;
+                case MessageType.RESULT:
+                {
+                    ResultPayload pResult = (ResultPayload)message.payload;
+                    
+                    Message resultMessage = new Message();
+                    resultMessage.type = MessageType.RESULT;
+                    resultMessage.payload = message.payload;
+                    
+                    Socket userConnection = new Socket(pResult.userHostData.GetHostIP(), pResult.userHostData.GetPort());
+
+                    ObjectOutputStream oSStream = new ObjectOutputStream(userConnection.getOutputStream());
+                    oSStream.writeObject(resultMessage);
+                    oSStream.flush();
+                }
+                break;
                 default:
                     break;
             }
