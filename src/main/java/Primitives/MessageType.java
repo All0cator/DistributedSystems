@@ -12,5 +12,6 @@ public enum MessageType {
     FILTER,
     TOTAL_STORES_ARRIVAL,
     RATE,
-    RESULT
+    RESULT,
+    PURCHASE
 };

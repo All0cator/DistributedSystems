@@ -33,17 +33,6 @@ public class ActionsForReducer extends ActionsForNode {
         return new ActionsForReducer(connectionSocket, (Reducer)node);
     }
 
-    public void SendMasterMessage(Message message) throws IOException {
-        HostData masterHostData = reducer.GetMasterHostData();
-    
-        Socket masterConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
-
-        ObjectOutputStream sOStream = new ObjectOutputStream(masterConnection.getOutputStream());
-
-        sOStream.writeObject(message);
-        sOStream.flush();
-    }
-
     @Override
     public void run() {
         try {
@@ -65,7 +54,7 @@ public class ActionsForReducer extends ActionsForNode {
                         pTotalCountArrival.mapID = pReduceTotalCount.mapID;
                         pTotalCountArrival.totalCount = data.totalCount;
 
-                        SendMasterMessage(totalCountArrivalMessage);
+                        SendMessageToNode(this.reducer.GetMasterHostData(), totalCountArrivalMessage);
                     }
                 }
                 break;
@@ -84,7 +73,7 @@ public class ActionsForReducer extends ActionsForNode {
                         ppStores.mapID = pStores.mapID;
                         ppStores.stores = data;
                         
-                        SendMasterMessage(totalStoresArrivalMessage);
+                        SendMessageToNode(this.reducer.GetMasterHostData(), totalStoresArrivalMessage);
                     }
                 }
                 break;

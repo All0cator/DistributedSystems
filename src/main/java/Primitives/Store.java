@@ -139,17 +139,23 @@ public class Store implements Serializable {
         }
     }
     
-    public synchronized void MakePurchase(Purchase purchase) {
-        for(int i = 0; i < purchase.productNames.size(); ++i) {
-            Product p = this.nameToProduct.get(purchase.productNames.get(i));
-            boolean isPurchased = p.Purchase(purchase.amounts.get(i));
-            if(isPurchased) {
-                // purchased
-            }
-            else {
-                // do something else return error code
+    public synchronized boolean MakePurchase(Purchase purchase) {
+
+        if(purchase.productNames == null) return false;
+        if(purchase.productNames.length == 0) return false;
+        if(purchase.amounts == null) return false;
+        if(purchase.amounts.length == 0) return false;
+
+        for(int i = 0; i < purchase.productNames.length; ++i) {
+            Product p = this.nameToProduct.get(purchase.productNames[i]);
+            boolean isPurchased = p.Purchase(purchase.amounts[i]);
+            
+            if(!isPurchased) {
+                return false;
             }
         }
+
+        return true;
     }
 
     public synchronized void Restock(String productName, int amount) {

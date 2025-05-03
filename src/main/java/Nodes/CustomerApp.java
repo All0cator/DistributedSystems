@@ -17,9 +17,11 @@ import Primitives.MessageType;
 import Primitives.Store;
 import Primitives.Payloads.FilterMasterPayload;
 import Primitives.Payloads.HostDataPayload;
+import Primitives.Payloads.PurchasePayload;
 import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.RegistrationPayload;
 import Primitives.Product;
+import Primitives.Purchase;
 import Primitives.Store;
 
 public class CustomerApp extends Node {
@@ -294,7 +296,89 @@ public class CustomerApp extends Node {
                     break;
                     case 3: // Make a Purchase
                     {
-    
+                        // Choose a store
+                        Store[] storesCopy = GetCopyStores();
+
+                        if(storesCopy == null) break;
+                        if(storesCopy.length == 0) break;
+
+                        for(int i = 0; i < storesCopy.length; ++i) {
+                            System.out.printf("%d) %s\n", i, storesCopy[i]);
+                        }
+                
+                        System.out.println("Choose A Store to make a purchase from(-1 to cancel -2 to confirm): ");
+
+                        int choice1;
+
+                        do {
+                            choice1 = Integer.parseInt(sc.nextLine());
+                        } while(choice1 < -1 || choice1 >= storesCopy.length);
+
+                        if(choice1 == -1) break;
+
+                        Store chosenStore = storesCopy[choice1];
+                        
+                        ArrayList<Product> products = chosenStore.GetProducts(true);
+
+                        ArrayList<String> chosenProducts = new ArrayList<String>();
+                        ArrayList<Integer> amounts = new ArrayList<Integer>();
+
+                        System.out.println("Choose A Product(-1 to cancel product):");
+
+                        for(int i = 0; i < products.size(); ++i) {
+                            System.out.printf("%d) Name: %s, Type: %s Price: %.2f\n", i, products.get(i).GetName(),
+                            products.get(i).GetType(), products.get(i).GetPrice());
+                        }
+
+                        // choose a list of products along with an amount
+                        int choice2 = -1;
+                        int choice3 = -1;
+
+                        do {
+                                
+                            do {
+                                choice2 = Integer.parseInt(sc.nextLine());
+                            } while(choice2 < -2 || choice2 > products.size());
+                            
+                            if(choice2 > -1) {
+                                do {
+                                    choice3 = Integer.parseInt(sc.nextLine());
+                                } while(choice3 < -1 || choice3 == 0);
+
+                                if(choice3 != -1) {
+                                    chosenProducts.add(products.get(choice2).GetName());
+                                    amounts.add(choice3);
+                                    System.out.printf("Added Product: %s Amount: %d to cart\n", products.get(choice2).GetName(), choice3);
+                                }
+                            }
+                                
+                        } while(choice2 != -1 && choice2 != -2);
+
+                        if(choice2 == -2) {
+                            Purchase purchase = new Purchase();
+                            purchase.productNames = chosenProducts.toArray(new String[0]);
+                            purchase.amounts = amounts.toArray(new Integer[0]);
+                            purchase.storeName = chosenStore.GetName();
+
+                            System.out.println(purchase);
+
+                            // Send it to master
+
+                            Message purchaseMessage = new Message();
+                            purchaseMessage.type = MessageType.PURCHASE;
+                            PurchasePayload pPurchase = new PurchasePayload();
+                            purchaseMessage.payload = pPurchase;
+                            
+                            pPurchase.purchase = purchase;
+                            pPurchase.userHostData = this.hostData;
+
+                            Socket masterConnection = new Socket(this.masterHostData.GetHostIP(), this.masterHostData.GetPort());
+                            ObjectOutputStream oStream = new ObjectOutputStream(masterConnection.getOutputStream());
+
+                            oStream.writeObject(purchaseMessage);
+                            oStream.flush();
+                        }
+
                     }    
                     break;
                     case 4: // Grade a Store

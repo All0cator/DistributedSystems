@@ -27,7 +27,7 @@ public class ManagerApp extends Node {
         new ManagerApp(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3])).start();
 
 
-        main_menu:
+        /*main_menu:
         while (true) {// couldnt figure out where to put this snippet, for now
             System.out.println("Welcome, Manager!");
             System.out.println("0. Exit");
@@ -220,7 +220,7 @@ public class ManagerApp extends Node {
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-        }
+        }*/
     }
 
     @Override

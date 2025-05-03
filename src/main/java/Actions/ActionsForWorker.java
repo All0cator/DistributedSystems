@@ -21,6 +21,7 @@ import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.JSONStoresPayload;
 import Primitives.Payloads.MapTotalCountPayload;
+import Primitives.Payloads.PurchasePayload;
 import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.ReduceTotalCountPayload;
 import Primitives.Payloads.ResultPayload;
@@ -55,6 +56,7 @@ public class ActionsForWorker extends ActionsForNode {
 
             HostData masterHostData = worker.GetMasterHostData();
 
+            // Need input stream also cannot use SendMessageToNode
             Socket masterConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
 
             ObjectOutputStream sOStream = new ObjectOutputStream(masterConnection.getOutputStream());
@@ -68,16 +70,6 @@ public class ActionsForWorker extends ActionsForNode {
 
             worker.SetReducerHostData(pHostData.hostData);
         }
-    }
-
-    private void SendReducerMessage(Message message) throws UnknownHostException, IOException {
-        HostData reducerHostData = worker.GetReducerHostData();
-        Socket reducerConnection = new Socket(reducerHostData.GetHostIP(), reducerHostData.GetPort());
-
-        ObjectOutputStream sOStream = new ObjectOutputStream(reducerConnection.getOutputStream());
-
-        sOStream.writeObject(message);
-        sOStream.flush();
     }
 
     @Override
@@ -124,7 +116,7 @@ public class ActionsForWorker extends ActionsForNode {
                     pReduceTotalCount.numWorkers = ((MapTotalCountPayload)message.payload).numWorkers;
                     pReduceTotalCount.inCounters = totalCount;
 
-                    SendReducerMessage(reduceMessage);
+                    SendMessageToNode(this.worker.GetReducerHostData(), reduceMessage);
                 }
                 break;
                 case MessageType.FILTER:
@@ -163,7 +155,7 @@ public class ActionsForWorker extends ActionsForNode {
                     pStores.mapID = pFilter.mapID;
                     pStores.numWorkers = pFilter.numWorkers;
 
-                    SendReducerMessage(reduceMessage);
+                    SendMessageToNode(this.worker.GetReducerHostData(), reduceMessage);
                 }
                 break;
                 case MessageType.RATE:
@@ -184,11 +176,27 @@ public class ActionsForWorker extends ActionsForNode {
 
                     HostData masterHostData = this.worker.GetMasterHostData();
 
-                    Socket masterConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
-                    ObjectOutputStream oSStream = new ObjectOutputStream(masterConnection.getOutputStream());
+                    SendMessageToNode(masterHostData, masterResponse);
+                }
+                break;
+                case MessageType.PURCHASE:
+                {
+                    PurchasePayload pPurchase = (PurchasePayload)message.payload;
+                    boolean success = this.worker.PurchaseFromStore(pPurchase.purchase);
 
-                    oSStream.writeObject(masterResponse);
-                    oSStream.flush();
+                    String result = success ? "Succesfully made Purchase: " + pPurchase.purchase : "Failed to make Purchase: " + pPurchase.purchase;
+
+                    Message masterResponse = new Message();
+                    masterResponse.type = MessageType.RESULT;
+                    ResultPayload pResult = new ResultPayload();
+                    masterResponse.payload = pResult;
+
+                    pResult.userHostData = pPurchase.userHostData;
+                    pResult.result = result;
+
+                    HostData masterHostData = this.worker.GetMasterHostData();
+
+                    SendMessageToNode(masterHostData, masterResponse);
                 }
                 break;
                 default:

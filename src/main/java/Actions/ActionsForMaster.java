@@ -14,6 +14,7 @@ import Primitives.Payloads.GetTotalCountResponsePayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.MapTotalCountPayload;
+import Primitives.Payloads.PurchasePayload;
 import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.RegistrationPayload;
 import Primitives.Payloads.ResultPayload;
@@ -53,10 +54,6 @@ public class ActionsForMaster extends ActionsForNode {
                         HostData workerHostData = ((RegistrationPayload)message.payload).hostData;
 
                         int workerID = master.RegisterWorker(workerHostData);
-
-                        Socket workerConnection = new Socket(workerHostData.GetHostIP(), workerHostData.GetPort());
-
-                        ObjectOutputStream sOStream = new ObjectOutputStream(workerConnection.getOutputStream());
                         
                         Message registrationReply = new Message();
                         registrationReply.type = MessageType.REGISTER_NODE;
@@ -64,9 +61,8 @@ public class ActionsForMaster extends ActionsForNode {
                         registrationReply.payload = pWorker;
                         pWorker.workerID = workerID;
                         pWorker.jsonStores = this.master.GetStoresFromMemory(workerID); 
-
-                        sOStream.writeObject(registrationReply);
-                        sOStream.flush();
+                        
+                        this.SendMessageToNode(workerHostData, registrationReply);
                     }
                     else {
                         master.RegisterReducer(((RegistrationPayload)message.payload).hostData);
@@ -90,12 +86,7 @@ public class ActionsForMaster extends ActionsForNode {
                     
                     for(HostData hostData : workerHostDatas) {
 
-                        Socket socket = new Socket(hostData.GetHostIP(), hostData.GetPort());
-
-                        ObjectOutputStream workerOStream = new ObjectOutputStream(socket.getOutputStream());
-                        
-                        workerOStream.writeObject(mapMessage);
-                        workerOStream.flush();
+                        this.SendMessageToNode(hostData, mapMessage);
                     }
                 }
                 break;
@@ -112,11 +103,7 @@ public class ActionsForMaster extends ActionsForNode {
 
                     result.payload = pTotalCountResponse;
 
-                    Socket responseSocket = new Socket(responseHostData.GetHostIP(), responseHostData.GetPort());
-                    ObjectOutputStream oStreamResponse = new ObjectOutputStream(responseSocket.getOutputStream());
-
-                    oStreamResponse.writeObject(result);
-                    oStreamResponse.flush();
+                    this.SendMessageToNode(responseHostData, result);
                 } 
                 break;
                 case MessageType.TOTAL_STORES_ARRIVAL:
@@ -128,11 +115,7 @@ public class ActionsForMaster extends ActionsForNode {
                     StoresPayload pStores = new StoresPayload();
                     result.payload = (StoresPayload)message.payload;
 
-                    Socket responseSocket = new Socket(responseHostData.GetHostIP(), responseHostData.GetPort());
-                    ObjectOutputStream oStreamResponse = new ObjectOutputStream(responseSocket.getOutputStream());
-
-                    oStreamResponse.writeObject(result);
-                    oStreamResponse.flush();
+                    this.SendMessageToNode(responseHostData, result);
                 }
                 break;
                 case MessageType.HOST_DISCOVERY:
@@ -176,11 +159,7 @@ public class ActionsForMaster extends ActionsForNode {
 
                     HostData customerHostData = ((HostDataPayload)message.payload).hostData;
 
-                    Socket customerConnection = new Socket(customerHostData.GetHostIP(), customerHostData.GetPort());
-                    ObjectOutputStream oSStream = new ObjectOutputStream(customerConnection.getOutputStream());
-
-                    oSStream.writeObject(response);
-                    oSStream.flush();
+                    this.SendMessageToNode(customerHostData, response);
                 }
                 break;
                 case MessageType.FILTER:
@@ -204,13 +183,7 @@ public class ActionsForMaster extends ActionsForNode {
                     pFilterWorker.customerLongitude = pFilter.customerLongitude;
 
                     for(HostData hostData : workerHostDatas) {
-                        Socket newConnection = new Socket(hostData.GetHostIP(), hostData.GetPort());
-
-                        ObjectOutputStream oStream = new ObjectOutputStream(newConnection.getOutputStream());
-
-
-                        oStream.writeObject(workerMessage);
-                        oStream.flush();
+                        this.SendMessageToNode(hostData, workerMessage);
                     }
                     
                 }
@@ -234,13 +207,7 @@ public class ActionsForMaster extends ActionsForNode {
 
                     HostData workerHostData = workerHostDatas.get(workerID);
 
-                    Socket workerConnection = new Socket(workerHostData.GetHostIP(), workerHostData.GetPort());
-
-                    ObjectOutputStream oSStream = new ObjectOutputStream(workerConnection.getOutputStream());
-
-                    oSStream.writeObject(rateMessage);
-                    oSStream.flush();
-
+                    this.SendMessageToNode(workerHostData, rateMessage);
                 }
                 break;
                 case MessageType.RESULT:
@@ -250,12 +217,25 @@ public class ActionsForMaster extends ActionsForNode {
                     Message resultMessage = new Message();
                     resultMessage.type = MessageType.RESULT;
                     resultMessage.payload = message.payload;
-                    
-                    Socket userConnection = new Socket(pResult.userHostData.GetHostIP(), pResult.userHostData.GetPort());
 
-                    ObjectOutputStream oSStream = new ObjectOutputStream(userConnection.getOutputStream());
-                    oSStream.writeObject(resultMessage);
-                    oSStream.flush();
+                    this.SendMessageToNode(pResult.userHostData, resultMessage);
+                }
+                break;
+                case MessageType.PURCHASE:
+                {
+                    PurchasePayload pPurchase = (PurchasePayload)message.payload;
+
+                    int workerID = this.master.StoreNameToWorkerID(pPurchase.purchase.storeName);
+
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+
+                    HostData workerHostData = workerHostDatas.get(workerID);
+
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.PURCHASE;
+                    workerMessage.payload = pPurchase;
+
+                    this.SendMessageToNode(workerHostData, workerMessage);
                 }
                 break;
                 default:

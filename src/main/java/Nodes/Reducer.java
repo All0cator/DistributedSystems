@@ -1,5 +1,6 @@
 package Nodes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import Actions.ActionsForMaster;
@@ -8,6 +9,8 @@ import Primitives.AtomicF;
 import Primitives.AtomicI;
 import Primitives.AtomicS;
 import Primitives.HostData;
+import Primitives.Message;
+import Primitives.MessageType;
 import Primitives.ReductionCompletionData;
 import Primitives.Store;
 import Primitives.Payloads.RegistrationPayload;
@@ -101,10 +104,20 @@ public class Reducer extends Node{
 
     @Override
     public void Start() {
+
+        Message msg = new Message();
+        msg.type = MessageType.REGISTER_NODE;
         RegistrationPayload p = new RegistrationPayload();
+        msg.payload = p;
+
         p.isWorkerNode = false;
         p.hostData = hostData;
 
-        this.actions.RegisterNodeToMaster(this.masterHostData, p);
+        
+        try {
+            this.actions.SendMessageToNode(this.masterHostData, msg);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 }

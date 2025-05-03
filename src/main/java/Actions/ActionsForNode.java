@@ -1,6 +1,7 @@
 package Actions;
 
 import java.io.IOException;
+import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -40,40 +41,24 @@ public abstract class ActionsForNode implements Runnable {
 
     public void GetTotalCount(HostData masterHostData, HostData nodeHostData) {
         try {
-
-            Socket nodeConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
-
-            ObjectOutputStream oStream = new ObjectOutputStream(nodeConnection.getOutputStream()); 
-            ObjectInputStream iStream = new ObjectInputStream(nodeConnection.getInputStream());
-
             Message message = new Message();
             message.type = MessageType.GET_TOTAL_COUNT;
             HostDataPayload pHostData = new HostDataPayload();
             message.payload = pHostData;
             pHostData.hostData = nodeHostData;
 
-            oStream.writeObject(message);
-            oStream.flush();
+            this.SendMessageToNode(masterHostData, message);
         } catch (IOException e) {
             throw new RuntimeException();
         } 
     }
 
-    public void RegisterNodeToMaster(HostData masterHostData, RegistrationPayload payload) {
-        try {
-            Socket nodeConnection = new Socket(masterHostData.GetHostIP(), masterHostData.GetPort());
+    public void SendMessageToNode(HostData nodeHostData, Message message) throws UnknownHostException, IOException {
+        Socket nodeConnection = new Socket(nodeHostData.GetHostIP(), nodeHostData.GetPort());
 
-            ObjectOutputStream oStream = new ObjectOutputStream(nodeConnection.getOutputStream()); 
-            ObjectInputStream iStream = new ObjectInputStream(nodeConnection.getInputStream());
+        ObjectOutputStream oStream = new ObjectOutputStream(nodeConnection.getOutputStream());
 
-            Message message = new Message();
-            message.type = MessageType.REGISTER_NODE;
-            message.payload = payload;
-
-            oStream.writeObject(message);
-            oStream.flush();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+        oStream.writeObject(message);
+        oStream.flush();
     }
 }

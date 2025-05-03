@@ -1,5 +1,6 @@
 package Nodes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,6 +10,8 @@ import Actions.ActionsForMaster;
 import Actions.ActionsForWorker;
 import Primitives.HostData;
 import Primitives.Message;
+import Primitives.MessageType;
+import Primitives.Purchase;
 import Primitives.Store;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.JSONStoresPayload;
@@ -84,6 +87,18 @@ public class Worker extends Node {
         return s != null;
     }
 
+    public synchronized boolean PurchaseFromStore(Purchase purchase) {
+        Store s = this.storeNameToStore.get(purchase.storeName);
+
+        boolean result = false;
+
+        if(s != null) {
+            result = s.MakePurchase(purchase); 
+        }
+
+        return result;
+    }
+
     public synchronized HostData GetMasterHostData() {
         return new HostData(this.masterHostData);
     }
@@ -111,10 +126,19 @@ public class Worker extends Node {
 
     @Override
     public void Start() {
+
+        Message msg = new Message();
+        msg.type = MessageType.REGISTER_NODE;
         RegistrationPayload p = new RegistrationPayload();
+        msg.payload = p;
+
         p.isWorkerNode = true;
         p.hostData = hostData;
 
-        this.actions.RegisterNodeToMaster(this.masterHostData, p);
+        try {
+            this.actions.SendMessageToNode(this.masterHostData, msg);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 }
