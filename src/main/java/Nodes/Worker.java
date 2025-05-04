@@ -3,6 +3,7 @@ package Nodes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.json.JSONObject;
 
@@ -11,6 +12,7 @@ import Actions.ActionsForWorker;
 import Primitives.HostData;
 import Primitives.Message;
 import Primitives.MessageType;
+import Primitives.Product;
 import Primitives.Purchase;
 import Primitives.Store;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
@@ -51,12 +53,60 @@ public class Worker extends Node {
         this.storeNameToStore = new HashMap<String, Store>();
     }
 
-    public synchronized void AddStore(Store store) {
+    public synchronized HashMap<String, Float> GetTotalRevenuePerFoodCategory(String type) {
+        HashMap<String, Float> result = new HashMap<String, Float>();
+
+        result.put("total", 0.0f);
+
+        for(Store s : this.storeNameToStore.values()) {
+            if(s.GetFoodCategory().equals(type)) {
+                result.put(s.GetName(), s.GetTotalRevenue());
+                result.put("total", result.get("total") + s.GetTotalRevenue());
+            }
+        }
+
+        return result;
+    }
+
+    public synchronized HashMap<String, Float> GetTotalRevenuePerProductType(String type) {
+        HashMap<String, Float> result = new HashMap<String, Float>();
+
+        result.put("total", 0.0f);
+
+        for(Store s : this.storeNameToStore.values()) {
+            result.put(s.GetName(), s.GetTotalRevenue(type));
+            result.put("total", result.get("total") + s.GetTotalRevenue(type));
+        }
+
+        return result;
+    }
+
+    public synchronized void GetManagerState(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+        for(Store store : this.storeNameToStore.values()) {
+            storeNames.add(store.GetName());
+            foodCategories.add(store.GetFoodCategory());
+
+            for(Product product : store.GetProducts(false)) {
+                productTypes.add(product.GetType());
+            }
+        }
+    }
+
+    public synchronized void GetFoodCategories(Set<String> foodCategories) {
+        for(Store store : this.storeNameToStore.values()) {
+            foodCategories.add(store.GetFoodCategory());
+        }
+    }
+
+    public synchronized boolean AddStore(Store store) {
 
         if(!this.storeNameToStore.containsKey(store.GetName())) {
             this.storeNameToStore.put(store.GetName(), store);
+            
+            return true;
         }
 
+        return false;
     }
 
     public synchronized ArrayList<Store> GetStores() {

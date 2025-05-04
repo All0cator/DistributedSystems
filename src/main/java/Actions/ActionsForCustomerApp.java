@@ -43,7 +43,7 @@ public class ActionsForCustomerApp extends ActionsForNode {
                 case MessageType.RESULT:
                     System.out.println(((ResultPayload)message.payload).result);
                     break;
-                case MessageType.REFRESH:
+                case MessageType.REFRESH_CUSTOMER:
                 {
                     FoodCategoriesPayload p = (FoodCategoriesPayload)message.payload;
                     this.customerApp.UpdateFoodCategories(p.foodCategories);

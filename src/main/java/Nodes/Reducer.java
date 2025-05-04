@@ -1,18 +1,27 @@
 package Nodes;
 
 import java.io.IOException;
+import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import Actions.ActionsForMaster;
 import Actions.ActionsForReducer;
 import Primitives.AtomicF;
 import Primitives.AtomicI;
+import Primitives.AtomicMS;
+import Primitives.AtomicMapStof;
 import Primitives.AtomicS;
+import Primitives.AtomicStr;
 import Primitives.HostData;
 import Primitives.Message;
 import Primitives.MessageType;
 import Primitives.ReductionCompletionData;
 import Primitives.Store;
+import Primitives.Payloads.ManagerStatePayload;
 import Primitives.Payloads.RegistrationPayload;
 
 public class Reducer extends Node{
@@ -22,6 +31,9 @@ public class Reducer extends Node{
     private AtomicF totalCounts[];
     private AtomicS totalStores[];
     private AtomicI workersRemainingCounters[];
+    private AtomicMapStof totalTypesToRevenuesMaps[];
+    private AtomicMS totalManagerStates[];
+    private AtomicStr totalFoodCategories[];
 
     public static void main(String[] args) {
         if(args.length != 4) return;
@@ -37,10 +49,17 @@ public class Reducer extends Node{
         this.totalCounts = new AtomicF[100];
         this.totalStores = new AtomicS[100];
         this.workersRemainingCounters = new AtomicI[100];
+        this.totalTypesToRevenuesMaps = new AtomicMapStof[100];
+        this.totalManagerStates = new AtomicMS[100];
+        this.totalFoodCategories = new AtomicStr[100];
+
         for(int i = 0; i < 100; ++i) {
             this.totalCounts[i] = new AtomicF();
             this.totalStores[i] = new AtomicS();
             this.workersRemainingCounters[i] = new AtomicI();
+            this.totalTypesToRevenuesMaps[i] = new AtomicMapStof();
+            this.totalManagerStates[i] = new AtomicMS();
+            this.totalFoodCategories[i] = new AtomicStr();
             this.workersRemainingCounters[i].SetValue(-1);
         }
     }
@@ -49,7 +68,7 @@ public class Reducer extends Node{
         return new HostData(this.masterHostData);
     }
 
-    public ReductionCompletionData ReductionCompletion(int mapID) {
+    public synchronized ReductionCompletionData ReductionCompletion(int mapID) {
         if(this.workersRemainingCounters[mapID].GetValue() > 0) {
             return null;
         }
@@ -63,7 +82,76 @@ public class Reducer extends Node{
         return data;
     }
 
-    public ArrayList<Store> StoreReductionCompletion(int mapID) {
+    public synchronized Set<String> FoodCategoriesReductionCompletion(int mapID) {
+        if(this.workersRemainingCounters[mapID].GetValue() > 0) {
+            return null;
+        }
+
+        Set<String> result = this.totalFoodCategories[mapID].GetValue();
+        this.totalFoodCategories[mapID].SetValue(new HashSet<String>());
+        this.workersRemainingCounters[mapID].SetValue(-1);
+
+        return result;
+    }
+
+    public synchronized void ReduceFoodCategories(int mapID, int numWorkers, Set<String> foodCategories) {
+        if(this.workersRemainingCounters[mapID].GetValue() == -1) {
+            this.workersRemainingCounters[mapID].SetValue(numWorkers);
+        }
+
+        for(String foodCategory : foodCategories) {
+            this.totalFoodCategories[mapID].Add(foodCategory);
+        }
+
+        this.workersRemainingCounters[mapID].Add(-1);
+    }
+
+    public synchronized void ReduceManagerState(ManagerStatePayload pState) {
+        if(this.workersRemainingCounters[pState.mapID].GetValue() == -1) {
+            this.workersRemainingCounters[pState.mapID].SetValue(pState.numWorkers);
+        }
+
+        for(String foodCategory : pState.foodCategories) {
+            this.totalManagerStates[pState.mapID].AddFoodCategory(foodCategory);
+        }
+
+        for(String productType : pState.productTypes) {
+            this.totalManagerStates[pState.mapID].AddProductType(productType);
+        }
+
+        for(String storeName : pState.storeNames) {
+            this.totalManagerStates[pState.mapID].AddStoreName(storeName);
+        }
+
+        // Finished with reduction of worker
+        this.workersRemainingCounters[pState.mapID].Add(-1);
+    }
+
+    public synchronized ManagerStatePayload ManagerStateReductionCompletion(int mapID) {
+        if(this.workersRemainingCounters[mapID].GetValue() > 0) {
+            return null;
+        }
+
+        ManagerStatePayload pState = new ManagerStatePayload();
+        pState.foodCategories = new HashSet<String>();
+        pState.productTypes = new HashSet<String>();
+        pState.storeNames = new HashSet<String>();
+        pState.mapID = mapID;
+
+        this.totalManagerStates[mapID].GetFoodCategories(pState.foodCategories);
+        this.totalManagerStates[mapID].GetProductTypes(pState.productTypes);
+        this.totalManagerStates[mapID].GetStoreNames(pState.storeNames);
+
+        this.totalManagerStates[mapID].SetFoodCategories(new HashSet<String>());
+        this.totalManagerStates[mapID].SetProductTypes(new HashSet<String>());
+        this.totalManagerStates[mapID].SetStoreNames(new HashSet<String>());
+
+        this.workersRemainingCounters[mapID].SetValue(-1);
+
+        return pState;
+    }
+
+    public synchronized ArrayList<Store> StoreReductionCompletion(int mapID) {
         if(this.workersRemainingCounters[mapID].GetValue() > 0) {
             return null;
         }
@@ -76,7 +164,34 @@ public class Reducer extends Node{
         return stores;
     }
 
-    public void Reduce(int mapID, int numWorkers, ArrayList<Store> totalStores) {
+    public synchronized HashMap<String, Float> RevenueByTypeReductionCompletion(int mapID) {
+        if(this.workersRemainingCounters[mapID].GetValue() > 0) {
+            return null;
+        }
+
+        HashMap<String, Float> revenues = this.totalTypesToRevenuesMaps[mapID].GetValue();
+        this.totalTypesToRevenuesMaps[mapID].SetValue(new HashMap<String, Float>());
+
+        this.workersRemainingCounters[mapID].SetValue(-1);
+
+        return revenues;
+    }
+
+    // java erases generics at runtime so i have to use another name to differentiate the signature
+    public synchronized void ReduceRevenueByType(int mapID, int numWorkers, HashMap<String, Float> typeToRevenue) {
+        if(this.workersRemainingCounters[mapID].GetValue() == -1) {
+            this.workersRemainingCounters[mapID].SetValue(numWorkers);
+        }
+
+        for(Map.Entry<String, Float> e : typeToRevenue.entrySet()) {
+            this.totalTypesToRevenuesMaps[mapID].Add(e.getKey(), e.getValue());
+        }
+
+        // Finished with reduction of worker
+        this.workersRemainingCounters[mapID].Add(-1);
+    }
+
+    public synchronized void Reduce(int mapID, int numWorkers, ArrayList<Store> totalStores) {
         if(this.workersRemainingCounters[mapID].GetValue() == -1) {
             this.workersRemainingCounters[mapID].SetValue(numWorkers);
         }
@@ -89,7 +204,7 @@ public class Reducer extends Node{
         this.workersRemainingCounters[mapID].Add(-1);
     }
  
-    public void Reduce(int mapID, int numWorkers, float totalCount[]) {
+    public synchronized void Reduce(int mapID, int numWorkers, float totalCount[]) {
         if(this.workersRemainingCounters[mapID].GetValue() == -1) {
             this.workersRemainingCounters[mapID].SetValue(numWorkers);
         }

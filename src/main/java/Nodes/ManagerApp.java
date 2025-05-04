@@ -2,225 +2,356 @@ package Nodes;
 
 import Actions.ActionsForManagerApp;
 import Primitives.HostData;
+import Primitives.Message;
+import Primitives.MessageType;
 import Primitives.Product;
 import Primitives.Store;
+import Primitives.Payloads.AddStorePayload;
+import Primitives.Payloads.HostDataPayload;
+import Primitives.Payloads.StoresPayload;
+import Primitives.Payloads.TotalRevenuePayload;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class ManagerApp extends Node {
     private final HostData masterHostData;
+
+    public static Scanner sc;
+
+    private Set<String> foodCategories;
+    private Set<String> productTypes;
+    private Set<String> storeNames;
 
     public ManagerApp(String hostIP, int port, String masterHostIP, int masterPort) {
         super(hostIP, port);
         this.actions = new ActionsForManagerApp();
         this.masterHostData = new HostData(masterHostIP, masterPort);
+        this.foodCategories = new HashSet<String>();
+        this.productTypes = new HashSet<String>();
+        this.storeNames = new HashSet<String>();
+    }
+
+    // Atomic operation clear and add
+    public synchronized void UpdateState(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+        this.foodCategories.clear();
+        this.productTypes.clear();
+        this.storeNames.clear();
+
+        this.foodCategories.addAll(foodCategories);
+        this.productTypes.addAll(productTypes);
+        this.storeNames.addAll(storeNames);
+    }
+
+    // Atomic operation add
+    public synchronized void UpdateStateIncremental(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+        this.foodCategories.addAll(foodCategories);
+        this.productTypes.addAll(productTypes);
+        this.storeNames.addAll(storeNames);
+    }
+
+    public synchronized void DebugState() {
+        System.out.println("Food Categories: ");
+        for(String foodCategory : this.foodCategories) {
+            System.out.println(foodCategory);
+        }
+
+        System.out.println("Product Types: ");
+        for(String productType : this.productTypes) {
+            System.out.println(productType);
+        }
+
+        System.out.println("Store Names: ");
+        for(String storeName : this.storeNames) {
+            System.out.println(storeName);
+        }
+    }
+
+    public synchronized String[] GetCopyFoodCategories() {
+        if(this.foodCategories.size() == 0) return null;
+
+        String result[] = this.foodCategories.toArray(new String[0]);
+
+        return result;
+    }
+
+    public synchronized String[] GetCopyProductTypes() {
+        if(this.productTypes.size() == 0) return null;
+
+        String result[] = this.productTypes.toArray(new String[0]);
+
+        return result;
+    }
+
+    public synchronized String[] GetCopyStoreNames() {
+        if(this.storeNames.size() == 0) return null;
+
+        String result[] = this.storeNames.toArray(new String[0]);
+
+        return result;
     }
 
     public static void main(String[] args) {
         if (args.length != 4) return;
 
-        new ManagerApp(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3])).start();
+        ManagerApp app = new ManagerApp(args[0], Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]));
 
+        app.start();
 
-        /*main_menu:
-        while (true) {// couldnt figure out where to put this snippet, for now
-            System.out.println("Welcome, Manager!");
-            System.out.println("0. Exit");
-            System.out.println("1. Add Store");
-            System.out.println("2. Edit Products");
-            System.out.println("3. Print Total Sales per Product Category");
-            System.out.println("4. Print Total Sales per Store Category");
+        ManagerApp.sc = new Scanner(System.in);
 
-            Scanner scanner = new Scanner(System.in);
-            int choice = scanner.nextInt();
+        app.ApplicationLoop();
+    }
 
-            ArrayList<Store> stores;
-
-            // TESTING DATA, TODO ask master for stores
-            stores = new ArrayList<>();
-            stores.add(new Store("Store 1", 1d, 1d, "slow food", 4.5d, 10, "logo1", new ArrayList<Product>()));
-            stores.add(new Store("Store 2", 1d, 2d, "burgers", 4.1d, 100, "logo2", new ArrayList<Product>()));
-            stores.add(new Store("Store 3", 2d, 1d, "pizza", 3.5d, 12, "logo3", new ArrayList<Product>()));
-
-
-            switch (choice) {
-                case 0:
-                    System.out.println("Exiting the application.");
-                    break main_menu;
-                case 1: //we supose that the json file has the proper format
-                    try {//in case the file is not found or not a json file
-                        // Code to add a new store
-                        System.out.println("Enter the json file (or the path to it):");
-                        String input = scanner.nextLine();
-                        String jsonFile = new String(Files.readAllBytes(Paths.get(input)));
-
-                        JSONObject obj = new JSONObject(jsonFile);
-                        JSONArray products = obj.getJSONArray("Products");
-
-                        ArrayList<Product> productList = new ArrayList<>();
-                        for (Object p : products) {//creating the product list
-                            JSONObject product = (JSONObject) p;
-
-                            String name = (String) product.get("ProductName");
-                            String type = (String) product.get("ProductType");
-                            String avbamount = (String) product.get("AvailableAmount");
-                            String price = (String) product.get("Price");
-
-                            productList.add(new Product(name, type, Integer.parseInt(avbamount), Double.parseDouble(price)));
-                        }
-
-                        //create store, I will handle it later
-                        Store store = new Store(obj.getString("StoreName"), obj.getDouble("Latitude"), obj.getDouble("Longitude"), obj.getString("FoodCategory"), obj.getDouble("Stars"), obj.getInt("NoOfVotes"), obj.getString("StoreLogo"), productList);
-
-                    } catch (Exception e) {
-                        System.out.println("Error reading the file: " + e.getMessage());
+    public void ApplicationLoop() {
+        try {
+            while(true){
+                System.out.println("Welcome, Manager!");
+                System.out.println("1. Refresh");
+                System.out.println("2. Add New Store");
+                System.out.println("3. Edit Store");
+                System.out.println("4. Query Revenue");
+                System.out.println("5. Exit");
+    
+                int choice = Integer.parseInt(sc.nextLine());
+    
+                switch (choice) {
+                    case 1: // Refresh food categories, product types, store names
+                    {
+                        Refresh();
                     }
                     break;
-                case 2:
-                    // Code to Edit Product Availability / Edit Products
+                    case 2: // Add New Store
+                    {
 
-                    store_list:
-                    while (true) {
-                        System.out.println("0. Back");
-                        for (int i = 0; i < stores.size(); i++) {
-                            Store store = stores.get(i);
-                            System.out.println((i + 1) + ". " + store.toString());
-                        }
+                        JSONObject jsonStore = new JSONObject();
 
-                        choice = scanner.nextInt();
+                        System.out.println("Insert New Store Data: ");
+                        
+                        System.out.print("StoreName: ");
+                        String storeName = sc.nextLine();
+                        System.out.print("Latitude: ");
+                        double latitude = Double.parseDouble(sc.nextLine());
+                        System.out.print("Longitude: ");
+                        double longitude = Double.parseDouble(sc.nextLine());
+                        System.out.print("FoodCategory: ");
+                        String foodCategory = sc.nextLine();
+                        System.out.print("Stars: ");
+                        float stars = Float.parseFloat(sc.nextLine());
+                        System.out.print("NoOfVotes: ");
+                        int noOfVotes = Integer.parseInt(sc.nextLine());
+                        System.out.print("StoreLogo: ");
+                        String storeLogo = sc.nextLine();
 
-                        Store chosenStore;
+                        jsonStore.put("StoreName", storeName);
+                        jsonStore.put("Latitude", latitude);
+                        jsonStore.put("Longitude", longitude);
+                        jsonStore.put("FoodCategory", foodCategory);
+                        jsonStore.put("Stars", stars);
+                        jsonStore.put("NoOfVotes", noOfVotes);
+                        jsonStore.put("StoreLogo", storeLogo);
+                    
+                        System.out.println("Insert Products(-1) Finish, 0) New Product, 1) Remove Last Product): ");
 
-                        if (choice > stores.size() || choice < 0) {
-                            System.out.println("Invalid input.");
-                            continue store_list;
-                        } else if (choice == 0) {
-                            System.out.println("Exiting to main menu.");
-                            break;
-                        } else {
-                            chosenStore = stores.get(choice - 1);
-                        }
+                        int choice1;
 
-                        ArrayList<Product> products = chosenStore.getProducts();
-                        store_menu:
-                        while (true) {
-                            System.out.println(chosenStore);
-                            System.out.println("0. Back");
-                            System.out.println("1. Add Product");
-                            for (int i = 0; i < products.size(); i++) {
-                                Product product = products.get(i);
-                                if (!product.isAvailable()) System.out.println("AVAILABLE OFF:");
-                                System.out.println((i + 2) + ". " + product.toString());
-                            }
+                        JSONArray jsonProducts = new JSONArray();
 
-                            choice = scanner.nextInt();
+                        do {
 
-                            if (choice > products.size() + 1 || choice < 0) {
-                                System.out.println("Invalid input.");
-                                continue store_menu;
-                            } else if (choice == 0) {
-                                System.out.println("Exiting to store list.");
-                                break store_menu;
-                            } else if (choice == 1) {
-                                System.out.println("Input name:");
-                                String productName = scanner.nextLine();
-                                System.out.println("Input product type:");
-                                String productType = scanner.nextLine();
-                                int availableAmount;
-                                while (true) {
-                                    System.out.println("Input available amount (Non negative integer)");
-                                    availableAmount = scanner.nextInt();
-                                    if (availableAmount < 0) continue;
-                                    break;
-                                }
-                                double price;
-                                while (true) {
-                                    System.out.println("Input price (Positive double)");
-                                    price = scanner.nextDouble();
-                                    if (price <= 0) continue;
-                                    break;
-                                }
-                                chosenStore.getProducts().add(new Product(productName, productType, availableAmount, price));
-                            } else {
-                                Product chosenProduct = products.get(choice - 2);
-                                product_menu:
-                                while (true) {
-                                    if (!chosenProduct.isAvailable()) System.out.println("AVAILABLE OFF:");
-                                    System.out.println(chosenProduct.toString());
-                                    System.out.println("0. Back");
-                                    System.out.println("1. Toggle Availability");
-                                    System.out.println("2. Edit Available Amount");
-
-                                    choice = scanner.nextInt();
-
-                                    if (choice == 0) {
-                                        System.out.println("Exiting to product list.");
-                                        break product_menu;
-                                    } else if (choice == 1) {
-                                        chosenProduct.setAvailable(!chosenProduct.isAvailable());
-                                        break product_menu;
-                                    } else if (choice == 2) {
-                                        available:
-                                        while (true) {
-                                            System.out.println(chosenProduct.getAvailableAmount());
-                                            System.out.println("Input amount to add, negative amount to remove, 0 to cancel:");
-
-                                            choice = scanner.nextInt();
-
-                                            try {
-                                                chosenProduct.editAmount(choice);
-                                                break available;
-                                            } catch (Exception e) {
-                                                System.out.println("Invalid subtraction.");
-                                                continue available;
-                                            }
-                                        }
-                                    } else {
-                                        System.out.println("Invalid input.");
-                                        continue product_menu;
+                            do {
+                                choice1 = Integer.parseInt(sc.nextLine());
+                            } while(choice1 < -1 || choice1 > 1);
+                            
+                            if(choice1 != -1) {
+                                if(choice1 == 1) {
+                                    if(jsonProducts.length() > 0) {
+                                        JSONObject removedProduct = (JSONObject)jsonProducts.remove(jsonProducts.length() - 1);
+                                        System.out.printf("Product Removed: %s\n", removedProduct.getString("ProductName"));
                                     }
+                                    continue;
                                 }
+
+                                System.out.print("ProductName: ");
+                                String productName = sc.nextLine();
+                                System.out.print("ProductType: ");
+                                String productType = sc.nextLine();
+                                System.out.print("Available Amount: ");
+                                int availableAmount = Integer.parseInt(sc.nextLine());
+                                System.out.print("Price: ");
+                                float price = Float.parseFloat(sc.nextLine());
+
+                                JSONObject jsonProduct = new JSONObject();
+                                jsonProduct.put("ProductName", productName);
+                                jsonProduct.put("ProductType", productType);
+                                jsonProduct.put("Available Amount", availableAmount);
+                                jsonProduct.put("Price", price);
+
+                                jsonProducts.put(jsonProduct);
+                                System.out.println("Product Added!");
                             }
+                            
+                        } while(choice1 != -1);
+
+                        // Add JSONArray to jsonStore
+                        jsonStore.put("Products", jsonProducts);
+
+                        // Send it to master -> correct worker
+                        // Get back a payload with the new store name, new food category, new product types if it is valid
+                        // and add them to ManagerState
+
+                        Message addStoreMessage = new Message();
+                        addStoreMessage.type = MessageType.ADD_STORE;
+                        AddStorePayload pStore = new AddStorePayload();
+                        addStoreMessage.payload = pStore;
+
+                        pStore.userHostData = this.hostData;
+                        pStore.store = new Store(jsonStore);
+
+                        this.actions.SendMessageToNode(this.masterHostData, addStoreMessage);
+
+                        /*{
+                            "StoreName": "Domino's",
+                            "Latitude": 37.99625,
+                            "Longitude": 23.73303,
+                            "FoodCategory": "pizzeria",
+                            "Stars": 4,
+                            "NoOfVotes": 444,
+                            "StoreLogo": "src/main/resources/dominos_logo.png",
+                            "Products": [
+                            {
+                            "ProductName": "margarita",
+                            "ProductType": "pizza",
+                            "Available Amount": 5000,
+                            "Price": 9.2
+                            },
+                            {
+                            "ProductName": "special",
+                            "ProductType": "pizza",
+                            "Available Amount": 1000,
+                            "Price": 12.0
+                            },
+                            {
+                            "ProductName": "chef's Salad",
+                            "ProductType": "salad",
+                            "Available Amount": 100,
+                            "Price": 5.0
+                            }
+                            ]
+                        }*/
+                    }
+                    break;
+                    case 3: // Edit Store
+                    {
+                        // Restock
+                        // Add/Remove Product
+                    }
+                    break;
+                    case 4: // Query Revenue Statistics
+                    {
+                        // Total Revenue by Product Type
+                        // Total Revenue by Food Category
+
+                        System.out.println("Choose query(-1 to cancel)");
+                        System.out.println("0) Total Revenue by Product Type");
+                        System.out.println("1) Total Revenue by Food Category");
+                        
+
+                        int choice1;
+
+                        do {
+                            choice1 = Integer.parseInt(sc.nextLine());
+                        } while(choice1 < -1 || choice1 > 1);
+
+                        if(choice1 != -1) {
+
+                            
+                            String[] choices = null;
+                            
+                            if(choice1 == 0) {
+                                // Product Type
+                                choices = GetCopyProductTypes();
+                            }
+                            else {
+                                // Food Category
+                                choices = GetCopyFoodCategories();
+                            }
+                            
+                            if(choices == null) break;
+                            if(choices.length == 0) break;
+                            
+                            System.out.println("Choose an option(-1 to cancel): ");
+                            
+                            for(int i = 0; i < choices.length; ++i) {
+                                System.out.printf("%d) %s\n", i, choices[i]);
+                            }
+
+                            int choice2;
+
+                            do {
+                                choice2 = Integer.parseInt(sc.nextLine());
+                            } while(choice2 < -1 || choice2 >= choices.length);
+
+                            if(choice2 != -1) {
+
+                                String chosenChoice = choices[choice2];
+                                
+                                Message masterMessage = new Message();
+                                masterMessage.type = choice1 == 1 ? MessageType.TOTAL_REVENUE_PER_FOOD_CATEGORY : MessageType.TOTAL_REVENUE_PER_PRODUCT_TYPE;
+                                TotalRevenuePayload pTotal = new TotalRevenuePayload();
+                                masterMessage.payload = pTotal;
+                                
+                                pTotal.userHostData = this.hostData;
+                                pTotal.type = chosenChoice;
+
+                                this.actions.SendMessageToNode(this.masterHostData, masterMessage);
+                            }
+
+
                         }
                     }
                     break;
-                case 3:
-                    // Code to Print Total Sales per Product Category
-                    System.out.println("Input product category:");
-                    String productType = scanner.nextLine();
-                    int total0 = 0;
-                    for (Store store : stores) {
-                        int subTotal = 0;
-                        for (Product product : store.getProducts()) {
-                            if (product.getProductType().equals(productType)) {
-                                //TODO get product sales, add them to subTotal
-                            }
-                        }
-                        System.out.println(store.getName() + ": " + subTotal);
-                        total0 += subTotal;
+                    case 5: // Exit
+                    {
+                        System.out.println("Exiting the application.");
+                        return;
                     }
-                    System.out.println("total: " + total0);
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
                     break;
-                case 4:
-                    // Code to Print Total Sales per Store Category
-                    System.out.println("Input store category:");
-                    String storeType = scanner.nextLine();
-                    int total1 = 0;
-                    for (Store store : stores) {
-                        if (store.getFoodCategory().equals(storeType))
-                            System.out.println(store.getName() + ": "); //TODO get store sales, add them to total
-                    }
-                    System.out.println("total: " + total1);
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                }
             }
-        }*/
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    public void Refresh() throws UnknownHostException, IOException {
+        Message userMessage = new Message();
+
+        userMessage.type = MessageType.REFRESH_MANAGER;
+        HostDataPayload pHostData = new HostDataPayload();
+        userMessage.payload = pHostData;
+        pHostData.hostData = this.hostData;
+
+        // send to master
+        Socket masterConnection = new Socket(this.masterHostData.GetHostIP(), this.masterHostData.GetPort());
+
+        ObjectOutputStream oStream = new ObjectOutputStream(masterConnection.getOutputStream());
+
+        oStream.writeObject(userMessage);
+        oStream.flush();
     }
 
     @Override

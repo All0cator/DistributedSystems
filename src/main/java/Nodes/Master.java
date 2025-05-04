@@ -28,7 +28,7 @@ public class Master extends Node{
 
     public RequestPool requestPool;
 
-    private Set<String> foodCategories;
+    //private Set<String> foodCategories;
 
     public Master(String hostIP, int port) {
         super(hostIP, port);
@@ -37,22 +37,6 @@ public class Master extends Node{
         this.requestPool = new RequestPool(100);
 
         this.reducerHostData = new HostData("", -1);
-
-        this.foodCategories = new HashSet<String>();
-
-        for(int i = 0; i < jsonStores.length; ++i) {
-            this.foodCategories.add(jsonStores[i].getString("FoodCategory"));
-        }
-    }
-
-    public synchronized void GetFoodCategories(ArrayList<String> foodCategories) {
-        Set<String> result = new HashSet<String>();
-
-        result.addAll(this.foodCategories);
-
-        for(String foodCategory : result) {
-            foodCategories.add(foodCategory);
-        }
     }
 
     public synchronized int RegisterWorker(HostData workerHostData) {

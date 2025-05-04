@@ -4,22 +4,30 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import Primitives.*;
+import Primitives.Payloads.AddStorePayload;
 import Primitives.Payloads.FilterMasterPayload;
 import Primitives.Payloads.FilterWorkerPayload;
 import Primitives.Payloads.FoodCategoriesPayload;
 import Primitives.Payloads.GetTotalCountResponsePayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
+import Primitives.Payloads.ManagerStatePayload;
 import Primitives.Payloads.MapTotalCountPayload;
 import Primitives.Payloads.PurchasePayload;
 import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.RegistrationPayload;
+import Primitives.Payloads.RequestDataPayload;
 import Primitives.Payloads.ResultPayload;
 import Primitives.Payloads.StoresPayload;
 import Primitives.Payloads.TotalCountArrivalPayload;
+import Primitives.Payloads.TotalRevenueArrivalPayload;
+import Primitives.Payloads.TotalRevenuePayload;
+import Primitives.Payloads.TotalRevenueRequestPayload;
 import Primitives.Payloads.WorkerRegistrationPayload;
 import Nodes.Master;
 import Nodes.Node;
@@ -106,13 +114,39 @@ public class ActionsForMaster extends ActionsForNode {
                     this.SendMessageToNode(responseHostData, result);
                 } 
                 break;
+                case MessageType.TOTAL_REVENUE_ARRIVAL:
+                {
+                    TotalRevenueArrivalPayload pRevenue = (TotalRevenueArrivalPayload)message.payload;
+
+                    HostData userHostData = this.master.requestPool.ReturnID(pRevenue.mapID);
+
+                    Message userMessage = new Message();
+                    userMessage.type = MessageType.TOTAL_REVENUE_ARRIVAL;
+                    userMessage.payload = pRevenue;
+
+                    this.SendMessageToNode(userHostData, userMessage);
+                    
+                }
+                break;
+                case MessageType.MANAGER_STATE_ARRIVAL:
+                {
+                    ManagerStatePayload pState = (ManagerStatePayload)message.payload;
+
+                    HostData responseHostData = master.requestPool.ReturnID(pState.mapID);
+
+                    Message result = new Message();
+                    result.type = MessageType.REFRESH_MANAGER;
+                    result.payload = pState;
+
+                    this.SendMessageToNode(responseHostData, result);
+                }
+                break;
                 case MessageType.TOTAL_STORES_ARRIVAL:
                 {
                     HostData responseHostData = master.requestPool.ReturnID(((StoresPayload)message.payload).mapID);
 
                     Message result = new Message();
                     result.type = MessageType.FILTER;
-                    StoresPayload pStores = new StoresPayload();
                     result.payload = (StoresPayload)message.payload;
 
                     this.SendMessageToNode(responseHostData, result);
@@ -147,19 +181,57 @@ public class ActionsForMaster extends ActionsForNode {
                     this.oStream.flush();
 
                     break;
-                case MessageType.REFRESH:
+                case MessageType.REFRESH_CUSTOMER:
                 {
-                    Message response = new Message();
-                    response.type = MessageType.REFRESH;
-                    FoodCategoriesPayload p = new FoodCategoriesPayload();
-                    response.payload = p;
-                    p.foodCategories = new ArrayList<String>();
+                    HostDataPayload pHostData = (HostDataPayload)message.payload;
 
-                    this.master.GetFoodCategories(p.foodCategories);
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.REFRESH_CUSTOMER;
+                    RequestDataPayload p = new RequestDataPayload();
+                    workerMessage.payload = p;
+                    
+                    int mapID = this.master.requestPool.GetID(pHostData.hostData);
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+                    
+                    p.mapID = mapID;
+                    p.numWorkers = workerHostDatas.size();
 
-                    HostData customerHostData = ((HostDataPayload)message.payload).hostData;
+                    for(HostData hostData : workerHostDatas) {
+                        this.SendMessageToNode(hostData, workerMessage);
+                    }
+                }
+                break;
+                case MessageType.FOOD_CATEGORIES_ARRIVAL:
+                {
+                    FoodCategoriesPayload pFood = (FoodCategoriesPayload)message.payload;
+                    
+                    Message customerMessage = new Message();
+                    customerMessage.type = MessageType.REFRESH_CUSTOMER;
+                    customerMessage.payload = pFood;
 
-                    this.SendMessageToNode(customerHostData, response);
+                    HostData userHostData = this.master.requestPool.ReturnID(pFood.mapID);
+
+                    this.SendMessageToNode(userHostData, customerMessage);
+                }
+                break;
+                case MessageType.REFRESH_MANAGER:
+                {
+                    HostData replyHostData = ((HostDataPayload)message.payload).hostData;
+
+                    int mapID = this.master.requestPool.GetID(replyHostData);
+
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.REFRESH_MANAGER;
+                    RequestDataPayload pRequestData = new RequestDataPayload();
+                    workerMessage.payload = pRequestData;
+                    pRequestData.mapID = mapID;
+                    pRequestData.numWorkers = workerHostDatas.size();
+
+                    for(HostData hostData : workerHostDatas) {
+                        this.SendMessageToNode(hostData, workerMessage);
+                    }
                 }
                 break;
                 case MessageType.FILTER:
@@ -238,8 +310,95 @@ public class ActionsForMaster extends ActionsForNode {
                     this.SendMessageToNode(workerHostData, workerMessage);
                 }
                 break;
+                case MessageType.ADD_STORE:
+                {
+                    AddStorePayload pStores = (AddStorePayload)message.payload;
+
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+
+                    int workerID = this.master.StoreNameToWorkerID(pStores.store.GetName());
+
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.ADD_STORE;
+                    workerMessage.payload = pStores;
+
+                    this.SendMessageToNode(workerHostDatas.get(workerID), workerMessage);
+                }
+                break;
+                case MessageType.ADD_STORE_ARRIVAL:
+                {
+                    AddStorePayload pStore = (AddStorePayload)message.payload;
+
+                    Message userMessage = new Message();
+                    userMessage.type = MessageType.ADD_STORE;
+                    ManagerStatePayload pState = new ManagerStatePayload();
+                    userMessage.payload = pState;
+
+                    pState.foodCategories = new HashSet<String>();
+                    pState.productTypes = new HashSet<String>();
+                    pState.storeNames = new HashSet<String>();
+
+                    if(pStore != null) {
+                        pState.foodCategories.add(pStore.store.GetFoodCategory());
+
+                        ArrayList<Product> products = pStore.store.GetProducts(false);
+
+                        for(Product p : products) {
+                            pState.productTypes.add(p.GetType());
+                        }
+
+                        pState.storeNames.add(pStore.store.GetName());
+                    }
+
+                    this.SendMessageToNode(pStore.userHostData, userMessage);
+                }
+                break;
+                case TOTAL_REVENUE_PER_FOOD_CATEGORY:
+                {
+                    TotalRevenuePayload pRevenue = (TotalRevenuePayload)message.payload;
+                    
+                    int mapID = this.master.requestPool.GetID(pRevenue.userHostData);
+                    
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+                    
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.TOTAL_REVENUE_PER_FOOD_CATEGORY;
+                    TotalRevenueRequestPayload pRequest = new TotalRevenueRequestPayload();
+                    workerMessage.payload = pRequest;
+                    
+                    pRequest.mapID = mapID;
+                    pRequest.numWorkers = workerHostDatas.size();
+                    pRequest.type = pRevenue.type;
+                    
+                    for(HostData hostData : workerHostDatas) {
+                        this.SendMessageToNode(hostData, workerMessage);
+                    }
+                }
+                break;
+                case TOTAL_REVENUE_PER_PRODUCT_TYPE:
+                {
+                    TotalRevenuePayload pRevenue = (TotalRevenuePayload)message.payload;
+                    
+                    int mapID = this.master.requestPool.GetID(pRevenue.userHostData);
+                    
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+                    
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.TOTAL_REVENUE_PER_PRODUCT_TYPE;
+                    TotalRevenueRequestPayload pRequest = new TotalRevenueRequestPayload();
+                    workerMessage.payload = pRequest;
+                    
+                    pRequest.mapID = mapID;
+                    pRequest.numWorkers = workerHostDatas.size();
+                    pRequest.type = pRevenue.type;
+                    
+                    for(HostData hostData : workerHostDatas) {
+                        this.SendMessageToNode(hostData, workerMessage);
+                    }
+                }
+                break;
                 default:
-                    break;
+                break;
             }
 
         } catch (ClassNotFoundException e) {

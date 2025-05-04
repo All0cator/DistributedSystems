@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream.PutField;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.json.JSONObject;
 
@@ -16,16 +18,22 @@ import Primitives.HostData;
 import Primitives.Message;
 import Primitives.MessageType;
 import Primitives.Store;
+import Primitives.Payloads.AddStorePayload;
 import Primitives.Payloads.FilterWorkerPayload;
+import Primitives.Payloads.FoodCategoriesPayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.JSONStoresPayload;
+import Primitives.Payloads.ManagerStatePayload;
 import Primitives.Payloads.MapTotalCountPayload;
 import Primitives.Payloads.PurchasePayload;
 import Primitives.Payloads.RatePayload;
 import Primitives.Payloads.ReduceTotalCountPayload;
+import Primitives.Payloads.ReduceTotalRevenuePayload;
+import Primitives.Payloads.RequestDataPayload;
 import Primitives.Payloads.ResultPayload;
 import Primitives.Payloads.StoresPayload;
+import Primitives.Payloads.TotalRevenueRequestPayload;
 import Primitives.Payloads.WorkerRegistrationPayload;
 
 public class ActionsForWorker extends ActionsForNode {
@@ -137,7 +145,7 @@ public class ActionsForWorker extends ActionsForNode {
                         boolean distanceConstraint = distanceKm <= 5.0d;
                         boolean foodCategoryConstraint = pFilter.filter.foodCategories.contains(store.GetFoodCategory()) 
                         || pFilter.filter.foodCategories.size() == 0;
-                        boolean starsConstraint = pFilter.filter.noOfStars.contains(store.GetStars())
+                        boolean starsConstraint = pFilter.filter.noOfStars.contains((int)store.GetStars())
                         || pFilter.filter.noOfStars.size() == 0;
                         boolean priceCategoryConstraint = pFilter.filter.priceCategories.contains(store.GetPriceCategory())
                         || pFilter.filter.priceCategories.size() == 0;
@@ -197,6 +205,105 @@ public class ActionsForWorker extends ActionsForNode {
                     HostData masterHostData = this.worker.GetMasterHostData();
 
                     SendMessageToNode(masterHostData, masterResponse);
+                }
+                break;
+                case MessageType.REFRESH_MANAGER:
+                {
+                    FindReducerHostData();
+
+                    RequestDataPayload pRequestData = (RequestDataPayload)message.payload;
+
+                    Message reduceMessage = new Message();
+                    reduceMessage.type = MessageType.REDUCE_MANAGER_STATE;
+                    ManagerStatePayload pState = new ManagerStatePayload();
+                    reduceMessage.payload = pState;
+
+                    pState.foodCategories = new HashSet<String>();
+                    pState.productTypes = new HashSet<String>();
+                    pState.storeNames = new HashSet<String>();
+                    pState.mapID = pRequestData.mapID;
+                    pState.numWorkers = pRequestData.numWorkers;
+
+                    this.worker.GetManagerState(pState.foodCategories, pState.productTypes, pState.storeNames);
+
+                    this.SendMessageToNode(this.worker.GetReducerHostData(), reduceMessage);
+                }
+                break;
+                case REFRESH_CUSTOMER:
+                {
+                    FindReducerHostData();
+
+                    RequestDataPayload pRequestData = (RequestDataPayload)message.payload;
+
+                    
+                    
+                    Message reducerMessage = new Message();
+                    reducerMessage.type = MessageType.REDUCE_FOOD_CATEGORIES;
+                    FoodCategoriesPayload pFood = new FoodCategoriesPayload();
+                    reducerMessage.payload = pFood;
+
+                    pFood.foodCategories = new HashSet<String>();
+                    pFood.mapID = pRequestData.mapID;
+                    pFood.numWorkers = pRequestData.numWorkers;
+                    
+                    this.worker.GetFoodCategories(pFood.foodCategories);
+
+                    this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
+                }
+                break;
+                case MessageType.ADD_STORE:
+                {
+                    AddStorePayload pStore = (AddStorePayload)message.payload;
+
+                    Message masterMessage = new Message();
+                    masterMessage.type = MessageType.ADD_STORE_ARRIVAL;
+                    masterMessage.payload = null;
+
+                    if(this.worker.AddStore(pStore.store)) {
+                        masterMessage.payload = pStore;
+                    }
+
+                    this.SendMessageToNode(this.worker.GetMasterHostData(), masterMessage);
+                }
+                break;
+                case MessageType.TOTAL_REVENUE_PER_FOOD_CATEGORY:
+                {
+                    FindReducerHostData();
+
+                    TotalRevenueRequestPayload pRequest = (TotalRevenueRequestPayload)message.payload;
+
+                    HashMap<String, Float> storeNameToTotalRevenue = this.worker.GetTotalRevenuePerFoodCategory(pRequest.type);
+
+                    Message reducerMessage = new Message();
+                    reducerMessage.type = MessageType.REDUCE_TOTAL_REVENUE;
+                    ReduceTotalRevenuePayload pReduce = new ReduceTotalRevenuePayload();
+                    reducerMessage.payload = pReduce;
+
+                    pReduce.mapID = pRequest.mapID;
+                    pReduce.numWorkers = pRequest.numWorkers;
+                    pReduce.storeNameToTotalRevenue = storeNameToTotalRevenue;
+
+                    this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
+                }
+                break;
+                case MessageType.TOTAL_REVENUE_PER_PRODUCT_TYPE:
+                {
+                    FindReducerHostData();
+
+                    TotalRevenueRequestPayload pRequest = (TotalRevenueRequestPayload)message.payload;
+
+                    HashMap<String, Float> storeNameToTotalRevenue = this.worker.GetTotalRevenuePerProductType(pRequest.type);
+
+                    Message reducerMessage = new Message();
+                    reducerMessage.type = MessageType.REDUCE_TOTAL_REVENUE;
+                    ReduceTotalRevenuePayload pReduce = new ReduceTotalRevenuePayload();
+                    reducerMessage.payload = pReduce;
+
+                    pReduce.mapID = pRequest.mapID;
+                    pReduce.numWorkers = pRequest.numWorkers;
+                    pReduce.storeNameToTotalRevenue = storeNameToTotalRevenue;
+
+                    this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
                 }
                 break;
                 default:

@@ -69,7 +69,7 @@ public class CustomerApp extends Node {
         }
     }
 
-    public synchronized void UpdateFoodCategories(ArrayList<String> foodCategories) {
+    public synchronized void UpdateFoodCategories(Set<String> foodCategories) {
         System.out.println(foodCategories.size());
         this.foodCategories.addAll(foodCategories);
     }
@@ -426,6 +426,7 @@ public class CustomerApp extends Node {
                     }
                     default:
                         System.out.println("Invalid choice. Please try again.");
+                    break;
                 }
             }
         } catch (IOException e) {
@@ -474,7 +475,7 @@ public class CustomerApp extends Node {
     public void Refresh() throws UnknownHostException, IOException {
         Message userMessage = new Message();
 
-        userMessage.type = MessageType.REFRESH;
+        userMessage.type = MessageType.REFRESH_CUSTOMER;
         HostDataPayload pHostData = new HostDataPayload();
         userMessage.payload = pHostData;
         pHostData.hostData = this.hostData;
