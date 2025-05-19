@@ -37,13 +37,13 @@ public class ActionsForCustomerApp extends ActionsForNode {
             Message message = (Message)iStream.readObject();
 
             switch (message.type) {
-                case MessageType.GET_TOTAL_COUNT_RESPONSE:
+                case GET_TOTAL_COUNT_RESPONSE:
                     System.out.println("Total Count is: " + ((GetTotalCountResponsePayload)message.payload).totalCount);
                     break;
-                case MessageType.RESULT:
+                case RESULT:
                     System.out.println(((ResultPayload)message.payload).result);
                     break;
-                case MessageType.REFRESH_CUSTOMER:
+                case REFRESH_CUSTOMER:
                 {
                     FoodCategoriesPayload p = (FoodCategoriesPayload)message.payload;
                     this.customerApp.UpdateFoodCategories(p.foodCategories);
@@ -51,7 +51,7 @@ public class ActionsForCustomerApp extends ActionsForNode {
                     this.customerApp.DebugFoodCategories();
                 }
                 break;
-                case MessageType.FILTER:
+                case FILTER:
                 {
                     ArrayList<Store> stores = ((StoresPayload)message.payload).stores;
 

@@ -22,6 +22,8 @@ import Primitives.Payloads.TotalCountArrivalPayload;
 import Primitives.Payloads.TotalRevenueArrivalPayload;
 import Nodes.Node;
 
+import static Primitives.MessageType.*;
+
 public class ActionsForReducer extends ActionsForNode {
     private Reducer reducer;
 
@@ -54,7 +56,7 @@ public class ActionsForReducer extends ActionsForNode {
 
                     if(data != null) {
                         Message totalCountArrivalMessage = new Message();
-                        totalCountArrivalMessage.type = MessageType.TOTAL_COUNT_ARRIVAL;
+                        totalCountArrivalMessage.type = TOTAL_COUNT_ARRIVAL;
                         TotalCountArrivalPayload pTotalCountArrival = new TotalCountArrivalPayload();
                         totalCountArrivalMessage.payload = pTotalCountArrival;
                         pTotalCountArrival.mapID = pReduceTotalCount.mapID;
@@ -64,7 +66,7 @@ public class ActionsForReducer extends ActionsForNode {
                     }
                 }
                 break;
-                case MessageType.REDUCE_MANAGER_STATE:
+                case REDUCE_MANAGER_STATE:
                 {
                     ManagerStatePayload pState = (ManagerStatePayload)message.payload;
 
@@ -76,7 +78,7 @@ public class ActionsForReducer extends ActionsForNode {
                     if(data != null) {
 
                         Message managerStateArrivalMessage = new Message();
-                        managerStateArrivalMessage.type = MessageType.MANAGER_STATE_ARRIVAL;
+                        managerStateArrivalMessage.type = MANAGER_STATE_ARRIVAL;
                         managerStateArrivalMessage.payload = data;
 
                         this.SendMessageToNode(this.reducer.GetMasterHostData(), managerStateArrivalMessage);
@@ -93,7 +95,7 @@ public class ActionsForReducer extends ActionsForNode {
 
                     if(foodCategories != null) {
                         Message masterMessage = new Message();
-                        masterMessage.type = MessageType.FOOD_CATEGORIES_ARRIVAL;
+                        masterMessage.type = FOOD_CATEGORIES_ARRIVAL;
                         FoodCategoriesPayload pFood2 = new FoodCategoriesPayload();
                         masterMessage.payload = pFood2;
                         
@@ -105,7 +107,7 @@ public class ActionsForReducer extends ActionsForNode {
                     }
                 }
                 break;
-                case MessageType.REDUCE_TOTAL_REVENUE:
+                case REDUCE_TOTAL_REVENUE:
                 {
                     ReduceTotalRevenuePayload pReduce = (ReduceTotalRevenuePayload)message.payload;
 
@@ -115,7 +117,7 @@ public class ActionsForReducer extends ActionsForNode {
 
                     if(data != null) {
                         Message masterMessage = new Message();
-                        masterMessage.type = MessageType.TOTAL_REVENUE_ARRIVAL;
+                        masterMessage.type = TOTAL_REVENUE_ARRIVAL;
                         TotalRevenueArrivalPayload pRevenue = new TotalRevenueArrivalPayload();
                         masterMessage.payload = pRevenue;
 
@@ -126,7 +128,7 @@ public class ActionsForReducer extends ActionsForNode {
                     }
                 }
                 break;
-                case MessageType.FILTER:
+                case FILTER:
                 {
                     StoresPayload pStores = (StoresPayload)message.payload;
 
@@ -135,7 +137,7 @@ public class ActionsForReducer extends ActionsForNode {
                     ArrayList<Store> data = this.reducer.StoreReductionCompletion(pStores.mapID);
                     if(data != null) {
                         Message totalStoresArrivalMessage = new Message();
-                        totalStoresArrivalMessage.type = MessageType.TOTAL_STORES_ARRIVAL;
+                        totalStoresArrivalMessage.type = TOTAL_STORES_ARRIVAL;
                         StoresPayload ppStores = new StoresPayload();
                         totalStoresArrivalMessage.payload = ppStores;
                         ppStores.mapID = pStores.mapID;

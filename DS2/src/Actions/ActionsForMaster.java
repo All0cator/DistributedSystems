@@ -32,6 +32,8 @@ import Primitives.Payloads.WorkerRegistrationPayload;
 import Nodes.Master;
 import Nodes.Node;
 
+import static Primitives.MessageType.*;
+
 public class ActionsForMaster extends ActionsForNode {
     private Master master;
 
@@ -55,7 +57,7 @@ public class ActionsForMaster extends ActionsForNode {
             Message message = (Message)iStream.readObject();
 
             switch (message.type) {
-                case MessageType.REGISTER_NODE:
+                case REGISTER_NODE:
 
                     if(((RegistrationPayload)message.payload).isWorkerNode) {
 
@@ -64,7 +66,7 @@ public class ActionsForMaster extends ActionsForNode {
                         int workerID = master.RegisterWorker(workerHostData);
                         
                         Message registrationReply = new Message();
-                        registrationReply.type = MessageType.REGISTER_NODE;
+                        registrationReply.type = REGISTER_NODE;
                         WorkerRegistrationPayload pWorker = new WorkerRegistrationPayload();
                         registrationReply.payload = pWorker;
                         pWorker.workerID = workerID;
@@ -77,7 +79,7 @@ public class ActionsForMaster extends ActionsForNode {
                     }
                     break;
             
-                case MessageType.GET_TOTAL_COUNT:
+                case GET_TOTAL_COUNT:
                 {
                     HostData replyHostData = ((HostDataPayload)message.payload).hostData;
 
@@ -86,7 +88,7 @@ public class ActionsForMaster extends ActionsForNode {
                     ArrayList<HostData> workerHostDatas = master.GetWorkerHostDatas();
 
                     Message mapMessage = new Message();
-                    mapMessage.type = MessageType.MAP_TOTAL_COUNT;
+                    mapMessage.type = MAP_TOTAL_COUNT;
                     MapTotalCountPayload pTotalCount = new MapTotalCountPayload();
                     pTotalCount.mapID = mapID;
                     pTotalCount.numWorkers = workerHostDatas.size();
@@ -99,12 +101,12 @@ public class ActionsForMaster extends ActionsForNode {
                 }
                 break;
                     
-                case MessageType.TOTAL_COUNT_ARRIVAL:
+                case TOTAL_COUNT_ARRIVAL:
                 {
                     HostData responseHostData = master.requestPool.ReturnID(((TotalCountArrivalPayload)message.payload).mapID);
 
                     Message result = new Message();
-                    result.type = MessageType.GET_TOTAL_COUNT_RESPONSE;
+                    result.type = GET_TOTAL_COUNT_RESPONSE;
 
                     GetTotalCountResponsePayload pTotalCountResponse = new GetTotalCountResponsePayload();
                     pTotalCountResponse.totalCount = ((TotalCountArrivalPayload)message.payload).totalCount;
@@ -114,54 +116,54 @@ public class ActionsForMaster extends ActionsForNode {
                     this.SendMessageToNode(responseHostData, result);
                 } 
                 break;
-                case MessageType.TOTAL_REVENUE_ARRIVAL:
+                case TOTAL_REVENUE_ARRIVAL:
                 {
                     TotalRevenueArrivalPayload pRevenue = (TotalRevenueArrivalPayload)message.payload;
 
                     HostData userHostData = this.master.requestPool.ReturnID(pRevenue.mapID);
 
                     Message userMessage = new Message();
-                    userMessage.type = MessageType.TOTAL_REVENUE_ARRIVAL;
+                    userMessage.type = TOTAL_REVENUE_ARRIVAL;
                     userMessage.payload = pRevenue;
 
                     this.SendMessageToNode(userHostData, userMessage);
                     
                 }
                 break;
-                case MessageType.MANAGER_STATE_ARRIVAL:
+                case MANAGER_STATE_ARRIVAL:
                 {
                     ManagerStatePayload pState = (ManagerStatePayload)message.payload;
 
                     HostData responseHostData = master.requestPool.ReturnID(pState.mapID);
 
                     Message result = new Message();
-                    result.type = MessageType.REFRESH_MANAGER;
+                    result.type = REFRESH_MANAGER;
                     result.payload = pState;
 
                     this.SendMessageToNode(responseHostData, result);
                 }
                 break;
-                case MessageType.TOTAL_STORES_ARRIVAL:
+                case TOTAL_STORES_ARRIVAL:
                 {
                     HostData responseHostData = master.requestPool.ReturnID(((StoresPayload)message.payload).mapID);
 
                     Message result = new Message();
-                    result.type = MessageType.FILTER;
+                    result.type = FILTER;
                     result.payload = (StoresPayload)message.payload;
 
                     this.SendMessageToNode(responseHostData, result);
                 }
                 break;
-                case MessageType.HOST_DISCOVERY:
+                case HOST_DISCOVERY:
                     HostDiscoveryRequestPayload pHostDiscoveryRequestMaster = (HostDiscoveryRequestPayload)message.payload;
                     
                     Message reply = new Message();
-                    reply.type = MessageType.HOST_DISCOVERY;
+                    reply.type = HOST_DISCOVERY;
                     HostDataPayload pHostDataPayload = new HostDataPayload();
                     reply.payload = pHostDataPayload;
                     
                     Message getHostData = new Message();
-                    getHostData.type = MessageType.HOST_DISCOVERY;
+                    getHostData.type = HOST_DISCOVERY;
 
                     if(!pHostDiscoveryRequestMaster.isWorkerNode) {
                         pHostDataPayload.hostData = master.GetReducerHostData();
@@ -181,12 +183,12 @@ public class ActionsForMaster extends ActionsForNode {
                     this.oStream.flush();
 
                     break;
-                case MessageType.REFRESH_CUSTOMER:
+                case REFRESH_CUSTOMER:
                 {
                     HostDataPayload pHostData = (HostDataPayload)message.payload;
 
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.REFRESH_CUSTOMER;
+                    workerMessage.type = REFRESH_CUSTOMER;
                     RequestDataPayload p = new RequestDataPayload();
                     workerMessage.payload = p;
                     
@@ -201,12 +203,12 @@ public class ActionsForMaster extends ActionsForNode {
                     }
                 }
                 break;
-                case MessageType.FOOD_CATEGORIES_ARRIVAL:
+                case FOOD_CATEGORIES_ARRIVAL:
                 {
                     FoodCategoriesPayload pFood = (FoodCategoriesPayload)message.payload;
                     
                     Message customerMessage = new Message();
-                    customerMessage.type = MessageType.REFRESH_CUSTOMER;
+                    customerMessage.type = REFRESH_CUSTOMER;
                     customerMessage.payload = pFood;
 
                     HostData userHostData = this.master.requestPool.ReturnID(pFood.mapID);
@@ -214,7 +216,7 @@ public class ActionsForMaster extends ActionsForNode {
                     this.SendMessageToNode(userHostData, customerMessage);
                 }
                 break;
-                case MessageType.REFRESH_MANAGER:
+                case REFRESH_MANAGER:
                 {
                     HostData replyHostData = ((HostDataPayload)message.payload).hostData;
 
@@ -223,7 +225,7 @@ public class ActionsForMaster extends ActionsForNode {
                     ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
 
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.REFRESH_MANAGER;
+                    workerMessage.type = REFRESH_MANAGER;
                     RequestDataPayload pRequestData = new RequestDataPayload();
                     workerMessage.payload = pRequestData;
                     pRequestData.mapID = mapID;
@@ -234,7 +236,7 @@ public class ActionsForMaster extends ActionsForNode {
                     }
                 }
                 break;
-                case MessageType.FILTER:
+                case FILTER:
                 {
                     // Create a new request and pass filters to workers
                     FilterMasterPayload pFilter = (FilterMasterPayload)message.payload;
@@ -244,7 +246,7 @@ public class ActionsForMaster extends ActionsForNode {
                     ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
                     
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.FILTER;
+                    workerMessage.type = FILTER;
                     FilterWorkerPayload pFilterWorker = new FilterWorkerPayload();
                     workerMessage.payload = pFilterWorker;
                     
@@ -260,12 +262,12 @@ public class ActionsForMaster extends ActionsForNode {
                     
                 }
                 break;
-                case MessageType.RATE:
+                case RATE:
                 {
                     RatePayload pRate = (RatePayload)message.payload;
 
                     Message rateMessage = new Message();
-                    rateMessage.type = MessageType.RATE;
+                    rateMessage.type = RATE;
                     RatePayload pRateWorker = new RatePayload();
                     rateMessage.payload = pRateWorker;
 
@@ -282,18 +284,18 @@ public class ActionsForMaster extends ActionsForNode {
                     this.SendMessageToNode(workerHostData, rateMessage);
                 }
                 break;
-                case MessageType.RESULT:
+                case RESULT:
                 {
                     ResultPayload pResult = (ResultPayload)message.payload;
                     
                     Message resultMessage = new Message();
-                    resultMessage.type = MessageType.RESULT;
+                    resultMessage.type = RESULT;
                     resultMessage.payload = message.payload;
 
                     this.SendMessageToNode(pResult.userHostData, resultMessage);
                 }
                 break;
-                case MessageType.PURCHASE:
+                case PURCHASE:
                 {
                     PurchasePayload pPurchase = (PurchasePayload)message.payload;
 
@@ -304,13 +306,13 @@ public class ActionsForMaster extends ActionsForNode {
                     HostData workerHostData = workerHostDatas.get(workerID);
 
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.PURCHASE;
+                    workerMessage.type = PURCHASE;
                     workerMessage.payload = pPurchase;
 
                     this.SendMessageToNode(workerHostData, workerMessage);
                 }
                 break;
-                case MessageType.ADD_STORE:
+                case ADD_STORE:
                 {
                     AddStorePayload pStores = (AddStorePayload)message.payload;
 
@@ -319,18 +321,18 @@ public class ActionsForMaster extends ActionsForNode {
                     int workerID = this.master.StoreNameToWorkerID(pStores.store.GetName());
 
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.ADD_STORE;
+                    workerMessage.type = ADD_STORE;
                     workerMessage.payload = pStores;
 
                     this.SendMessageToNode(workerHostDatas.get(workerID), workerMessage);
                 }
                 break;
-                case MessageType.ADD_STORE_ARRIVAL:
+                case ADD_STORE_ARRIVAL:
                 {
                     AddStorePayload pStore = (AddStorePayload)message.payload;
 
                     Message userMessage = new Message();
-                    userMessage.type = MessageType.ADD_STORE;
+                    userMessage.type = ADD_STORE;
                     ManagerStatePayload pState = new ManagerStatePayload();
                     userMessage.payload = pState;
 
@@ -362,7 +364,7 @@ public class ActionsForMaster extends ActionsForNode {
                     ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
                     
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.TOTAL_REVENUE_PER_FOOD_CATEGORY;
+                    workerMessage.type = TOTAL_REVENUE_PER_FOOD_CATEGORY;
                     TotalRevenueRequestPayload pRequest = new TotalRevenueRequestPayload();
                     workerMessage.payload = pRequest;
                     
@@ -384,7 +386,7 @@ public class ActionsForMaster extends ActionsForNode {
                     ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
                     
                     Message workerMessage = new Message();
-                    workerMessage.type = MessageType.TOTAL_REVENUE_PER_PRODUCT_TYPE;
+                    workerMessage.type = TOTAL_REVENUE_PER_PRODUCT_TYPE;
                     TotalRevenueRequestPayload pRequest = new TotalRevenueRequestPayload();
                     workerMessage.payload = pRequest;
                     

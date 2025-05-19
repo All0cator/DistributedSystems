@@ -17,6 +17,8 @@ import Primitives.Payloads.HostDiscoveryRequestPayload;
 import Primitives.Payloads.JSONStoresPayload;
 import Primitives.Payloads.RegistrationPayload;
 
+import static Primitives.MessageType.GET_TOTAL_COUNT;
+
 public abstract class ActionsForNode implements Runnable {
 
     protected Socket connectionSocket;
@@ -42,7 +44,7 @@ public abstract class ActionsForNode implements Runnable {
     public void GetTotalCount(HostData masterHostData, HostData nodeHostData) {
         try {
             Message message = new Message();
-            message.type = MessageType.GET_TOTAL_COUNT;
+            message.type = GET_TOTAL_COUNT;
             HostDataPayload pHostData = new HostDataPayload();
             message.payload = pHostData;
             pHostData.hostData = nodeHostData;

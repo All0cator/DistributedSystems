@@ -36,13 +36,13 @@ public class ActionsForManagerApp extends ActionsForNode{
             Message message = (Message)iStream.readObject();
 
             switch (message.type) {
-                case MessageType.GET_TOTAL_COUNT_RESPONSE:
+                case GET_TOTAL_COUNT_RESPONSE:
                     System.out.println("Total Count is: " + ((GetTotalCountResponsePayload)message.payload).totalCount);
                     break;
-                case MessageType.RESULT:
+                case RESULT:
                     System.out.println(((ResultPayload)message.payload).result);
                     break;
-                case MessageType.REFRESH_MANAGER:
+                case REFRESH_MANAGER:
                 {
                     ManagerStatePayload pState = (ManagerStatePayload)message.payload;
                     
@@ -51,7 +51,7 @@ public class ActionsForManagerApp extends ActionsForNode{
                     this.managerApp.DebugState();
                 }
                 break;
-                case MessageType.ADD_STORE:
+                case ADD_STORE:
                 {
                     ManagerStatePayload pState = (ManagerStatePayload)message.payload;
 
@@ -60,7 +60,7 @@ public class ActionsForManagerApp extends ActionsForNode{
                     this.managerApp.DebugState();
                 }
                 break;
-                case MessageType.TOTAL_REVENUE_ARRIVAL:
+                case TOTAL_REVENUE_ARRIVAL:
                 {
                     TotalRevenueArrivalPayload pRevenue = (TotalRevenueArrivalPayload)message.payload;
 

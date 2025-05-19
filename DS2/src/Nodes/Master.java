@@ -12,7 +12,7 @@ import Primitives.RequestPool;
 public class Master extends Node{
 
     // should be launch argument 
-    public static int MAX_WORKERS = 4;
+    public static int MAX_WORKERS = 2;
 
     // 37.99625, 23.73303
     // 37.97492, 23.73430
@@ -71,7 +71,8 @@ public class Master extends Node{
 
     public static void main(String[] args) {
         if(args.length != 2) return;
-        
+
+        System.out.println("Master!");
 
         new Master(args[0], Integer.parseInt(args[1])).start();
     }
