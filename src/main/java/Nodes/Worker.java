@@ -81,9 +81,9 @@ public class Worker extends Node {
         return result;
     }
 
-    public synchronized void GetManagerState(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+    public synchronized void GetManagerState(Set<String> foodCategories, Set<String> productTypes, ArrayList<Store> stores) {
         for(Store store : this.storeNameToStore.values()) {
-            storeNames.add(store.GetName());
+            stores.add(store);
             foodCategories.add(store.GetFoodCategory());
 
             for(Product product : store.GetProducts(false)) {
@@ -135,6 +135,28 @@ public class Worker extends Node {
 
 
         return s != null;
+    }
+
+    public synchronized void RestockProduct(String storeName, String productName, int restockValue) {
+        Store s = this.storeNameToStore.get(storeName);
+
+        if(s != null) {
+            int newAvailableAmmount = s.Restock(productName, restockValue);
+            if(newAvailableAmmount != -1) {
+                System.out.printf("Store: %s Product: %s Stock: %d\n", storeName, productName, newAvailableAmmount);
+            }
+        }
+    }
+
+    public synchronized void ToggleProductVisibility(String storeName, String productName, boolean isCustomerVisible) {
+        Store s = this.storeNameToStore.get(storeName);
+
+        if(s != null) {
+            Boolean newCustomerVisibility = s.ToggleVisibility(productName, isCustomerVisible);
+            if(newCustomerVisibility != null) {
+                System.out.printf("Store: %s Product: %s Product Visibility: %b\n", storeName, productName, isCustomerVisible);
+            }
+        }
     }
 
     public synchronized boolean PurchaseFromStore(Purchase purchase) {

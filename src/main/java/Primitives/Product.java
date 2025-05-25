@@ -48,8 +48,13 @@ public class Product implements Serializable {
         return false;
     }
 
-    public synchronized void Restock(int amount) {
-        this.availableAmount += amount;
+    public synchronized int Restock(int amount) {
+
+        if(this.availableAmount + amount >= 0) {
+            this.availableAmount += amount;
+        }
+
+        return this.availableAmount;
     }
 
     public String GetType() {
@@ -60,9 +65,11 @@ public class Product implements Serializable {
         return this.totalRevenue;
     }
 
-    public synchronized void ToggleProductCustomerVisibility(boolean 
+    public synchronized Boolean ToggleProductCustomerVisibility(boolean 
     isVisible) {
         this.isCustomerVisible = isVisible;
+
+        return this.isCustomerVisible;
     }
 
     public synchronized boolean GetCustomerVisibility() {
