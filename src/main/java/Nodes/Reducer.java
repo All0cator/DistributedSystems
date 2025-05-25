@@ -119,8 +119,8 @@ public class Reducer extends Node{
             this.totalManagerStates[pState.mapID].AddProductType(productType);
         }
 
-        for(String storeName : pState.storeNames) {
-            this.totalManagerStates[pState.mapID].AddStoreName(storeName);
+        for(Store store : pState.stores) {
+            this.totalManagerStates[pState.mapID].AddStore(store);
         }
 
         // Finished with reduction of worker
@@ -135,16 +135,16 @@ public class Reducer extends Node{
         ManagerStatePayload pState = new ManagerStatePayload();
         pState.foodCategories = new HashSet<String>();
         pState.productTypes = new HashSet<String>();
-        pState.storeNames = new HashSet<String>();
+        pState.stores = new ArrayList<Store>();
         pState.mapID = mapID;
 
         this.totalManagerStates[mapID].GetFoodCategories(pState.foodCategories);
         this.totalManagerStates[mapID].GetProductTypes(pState.productTypes);
-        this.totalManagerStates[mapID].GetStoreNames(pState.storeNames);
+        this.totalManagerStates[mapID].GetStores(pState.stores);
 
         this.totalManagerStates[mapID].SetFoodCategories(new HashSet<String>());
         this.totalManagerStates[mapID].SetProductTypes(new HashSet<String>());
-        this.totalManagerStates[mapID].SetStoreNames(new HashSet<String>());
+        this.totalManagerStates[mapID].SetStores(new ArrayList<Store>());
 
         this.workersRemainingCounters[mapID].SetValue(-1);
 

@@ -336,7 +336,7 @@ public class ActionsForMaster extends ActionsForNode {
 
                     pState.foodCategories = new HashSet<String>();
                     pState.productTypes = new HashSet<String>();
-                    pState.storeNames = new HashSet<String>();
+                    pState.stores = new ArrayList<Store>();
 
                     if(pStore != null) {
                         pState.foodCategories.add(pStore.store.GetFoodCategory());
@@ -347,7 +347,7 @@ public class ActionsForMaster extends ActionsForNode {
                             pState.productTypes.add(p.GetType());
                         }
 
-                        pState.storeNames.add(pStore.store.GetName());
+                        pState.stores.add(pStore.store);
                     }
 
                     this.SendMessageToNode(pStore.userHostData, userMessage);

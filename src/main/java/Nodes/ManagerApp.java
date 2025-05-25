@@ -32,7 +32,7 @@ public class ManagerApp extends Node {
 
     private Set<String> foodCategories;
     private Set<String> productTypes;
-    private Set<String> storeNames;
+    private ArrayList<Store> stores;
 
     public ManagerApp(String hostIP, int port, String masterHostIP, int masterPort) {
         super(hostIP, port);
@@ -40,25 +40,25 @@ public class ManagerApp extends Node {
         this.masterHostData = new HostData(masterHostIP, masterPort);
         this.foodCategories = new HashSet<String>();
         this.productTypes = new HashSet<String>();
-        this.storeNames = new HashSet<String>();
+        this.stores = new ArrayList<Store>();
     }
 
     // Atomic operation clear and add
-    public synchronized void UpdateState(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+    public synchronized void UpdateState(Set<String> foodCategories, Set<String> productTypes, ArrayList<Store> stores) {
         this.foodCategories.clear();
         this.productTypes.clear();
-        this.storeNames.clear();
+        this.stores.clear();
 
         this.foodCategories.addAll(foodCategories);
         this.productTypes.addAll(productTypes);
-        this.storeNames.addAll(storeNames);
+        this.stores.addAll(stores);
     }
 
     // Atomic operation add
-    public synchronized void UpdateStateIncremental(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+    public synchronized void UpdateStateIncremental(Set<String> foodCategories, Set<String> productTypes, ArrayList<Store> stores) {
         this.foodCategories.addAll(foodCategories);
         this.productTypes.addAll(productTypes);
-        this.storeNames.addAll(storeNames);
+        this.stores.addAll(stores);
     }
 
     public synchronized void DebugState() {
@@ -73,8 +73,8 @@ public class ManagerApp extends Node {
         }
 
         System.out.println("Store Names: ");
-        for(String storeName : this.storeNames) {
-            System.out.println(storeName);
+        for(Store store : this.stores) {
+            System.out.println(store.GetName());
         }
     }
 
@@ -94,10 +94,10 @@ public class ManagerApp extends Node {
         return result;
     }
 
-    public synchronized String[] GetCopyStoreNames() {
-        if(this.storeNames.size() == 0) return null;
+    public synchronized Store[] GetCopyStores() {
+        if(this.stores.size() == 0) return null;
 
-        String result[] = this.storeNames.toArray(new String[0]);
+        Store result[] = this.stores.toArray(new Store[0]);
 
         return result;
     }
