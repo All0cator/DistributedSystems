@@ -7,6 +7,8 @@ import Primitives.MessageType;
 import Primitives.Product;
 import Primitives.Store;
 import Primitives.Payloads.AddStorePayload;
+import Primitives.Payloads.EditStorePayload;
+import Primitives.Payloads.GetStorePayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.StoresPayload;
 import Primitives.Payloads.TotalRevenuePayload;
@@ -20,6 +22,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -32,7 +35,7 @@ public class ManagerApp extends Node {
 
     private Set<String> foodCategories;
     private Set<String> productTypes;
-    private Set<String> storeNames;
+    private ArrayList<Store> stores;
 
     public ManagerApp(String hostIP, int port, String masterHostIP, int masterPort) {
         super(hostIP, port);
@@ -40,25 +43,25 @@ public class ManagerApp extends Node {
         this.masterHostData = new HostData(masterHostIP, masterPort);
         this.foodCategories = new HashSet<String>();
         this.productTypes = new HashSet<String>();
-        this.storeNames = new HashSet<String>();
+        this.stores = new ArrayList<Store>();
     }
 
     // Atomic operation clear and add
-    public synchronized void UpdateState(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+    public synchronized void UpdateState(Set<String> foodCategories, Set<String> productTypes, ArrayList<Store> stores) {
         this.foodCategories.clear();
         this.productTypes.clear();
-        this.storeNames.clear();
+        this.stores.clear();
 
         this.foodCategories.addAll(foodCategories);
         this.productTypes.addAll(productTypes);
-        this.storeNames.addAll(storeNames);
+        this.stores.addAll(stores);
     }
 
     // Atomic operation add
-    public synchronized void UpdateStateIncremental(Set<String> foodCategories, Set<String> productTypes, Set<String> storeNames) {
+    public synchronized void UpdateStateIncremental(Set<String> foodCategories, Set<String> productTypes, ArrayList<Store> stores) {
         this.foodCategories.addAll(foodCategories);
         this.productTypes.addAll(productTypes);
-        this.storeNames.addAll(storeNames);
+        this.stores.addAll(stores);
     }
 
     public synchronized void DebugState() {
@@ -73,8 +76,8 @@ public class ManagerApp extends Node {
         }
 
         System.out.println("Store Names: ");
-        for(String storeName : this.storeNames) {
-            System.out.println(storeName);
+        for(Store store : this.stores) {
+            System.out.println(store.GetName());
         }
     }
 
@@ -94,10 +97,10 @@ public class ManagerApp extends Node {
         return result;
     }
 
-    public synchronized String[] GetCopyStoreNames() {
-        if(this.storeNames.size() == 0) return null;
+    public synchronized Store[] GetCopyStores() {
+        if(this.stores.size() == 0) return null;
 
-        String result[] = this.storeNames.toArray(new String[0]);
+        Store result[] = this.stores.toArray(new Store[0]);
 
         return result;
     }
@@ -254,8 +257,83 @@ public class ManagerApp extends Node {
                     break;
                     case 3: // Edit Store
                     {
-                        // Restock
-                        // Add/Remove Product
+                        // Choose store
+                        Store[] stores = this.GetCopyStores();
+                        
+                        if(stores == null) break;
+                        if(stores.length == 0) break;
+                        
+                        System.out.println("Choose Store to Edit(-1 to cancel): ");
+
+                        for(int i = 0; i < stores.length; ++i) {
+                            System.out.printf("%d) %s\n", i, stores[i].GetName());
+                        }
+
+                        int choice1;
+                        do {
+                            choice1 = Integer.parseInt(sc.nextLine());
+                        } while(choice1 < -1 || choice1 >= stores.length);
+
+                        if(choice1 == -1) break;
+
+                        Store store = stores[choice1];                        
+
+                        // Choose product
+
+                        System.out.println("Choose a product to Edit(-1 to cancel): ");
+
+                        ArrayList<Product> storeProducts = store.GetProducts(false); 
+
+                        for(int i = 0; i < storeProducts.size(); ++i) {
+                            System.out.printf("%d) %s\n", i, storeProducts.get(i).GetName());
+                        }
+
+                        int choice2;
+                        do {
+                            choice2 = Integer.parseInt(sc.nextLine());
+                        } while(choice2 < -1 || choice2 >= storeProducts.size());
+
+                        if(choice2 == -1) break;
+
+                        Product product = storeProducts.get(choice2);
+
+                        System.out.println("Choose an option(-1 to cancel): ");
+                        System.out.println("0) Restock");
+                        System.out.println("1) Add Product");
+                        System.out.println("2) Remove Product");
+
+                        int choice3;
+                        do {
+                            choice3 = Integer.parseInt(sc.nextLine());
+                        } while(choice3 < -1 || choice3 > 2);
+
+                        if(choice3 == -1) break;
+
+                        Integer restockValue = null;
+                        Boolean isCustomerVisible = null; 
+
+                        if(choice3 == 0) {
+                            // Restock
+                            System.out.println("Input Restock value (negative value to remove amount):");
+                            restockValue = Integer.parseInt(sc.nextLine());
+                        } else if(choice3 == 1) {
+                            // Add Product
+                            isCustomerVisible = true;
+                        } else if(choice3 == 2) {
+                            // Remove Product
+                            isCustomerVisible = false;
+                        }
+
+                        Message masterMessage = new Message();
+                        masterMessage.type = MessageType.EDIT_STORE;
+                        EditStorePayload pEdit = new EditStorePayload();
+                        masterMessage.payload = pEdit;
+                        pEdit.storeName = store.GetName();
+                        pEdit.productName = product.GetName();
+                        pEdit.restockValue = restockValue;
+                        pEdit.isCustomerVisible = isCustomerVisible;
+
+                        this.actions.SendMessageToNode(this.masterHostData, masterMessage);
                     }
                     break;
                     case 4: // Query Revenue Statistics

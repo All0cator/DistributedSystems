@@ -46,7 +46,7 @@ public class ActionsForManagerApp extends ActionsForNode{
                 {
                     ManagerStatePayload pState = (ManagerStatePayload)message.payload;
                     
-                    this.managerApp.UpdateState(pState.foodCategories, pState.productTypes, pState.storeNames);
+                    this.managerApp.UpdateState(pState.foodCategories, pState.productTypes, pState.stores);
 
                     this.managerApp.DebugState();
                 }
@@ -55,7 +55,7 @@ public class ActionsForManagerApp extends ActionsForNode{
                 {
                     ManagerStatePayload pState = (ManagerStatePayload)message.payload;
 
-                    this.managerApp.UpdateStateIncremental(pState.foodCategories, pState.productTypes, pState.storeNames);
+                    this.managerApp.UpdateStateIncremental(pState.foodCategories, pState.productTypes, pState.stores);
 
                     this.managerApp.DebugState();
                 }

@@ -19,6 +19,7 @@ import Primitives.Message;
 import Primitives.MessageType;
 import Primitives.Store;
 import Primitives.Payloads.AddStorePayload;
+import Primitives.Payloads.EditStorePayload;
 import Primitives.Payloads.FilterWorkerPayload;
 import Primitives.Payloads.FoodCategoriesPayload;
 import Primitives.Payloads.HostDataPayload;
@@ -220,11 +221,11 @@ public class ActionsForWorker extends ActionsForNode {
 
                     pState.foodCategories = new HashSet<String>();
                     pState.productTypes = new HashSet<String>();
-                    pState.storeNames = new HashSet<String>();
+                    pState.stores = new ArrayList<Store>();
                     pState.mapID = pRequestData.mapID;
                     pState.numWorkers = pRequestData.numWorkers;
 
-                    this.worker.GetManagerState(pState.foodCategories, pState.productTypes, pState.storeNames);
+                    this.worker.GetManagerState(pState.foodCategories, pState.productTypes, pState.stores);
 
                     this.SendMessageToNode(this.worker.GetReducerHostData(), reduceMessage);
                 }
@@ -304,6 +305,19 @@ public class ActionsForWorker extends ActionsForNode {
                     pReduce.storeNameToTotalRevenue = storeNameToTotalRevenue;
 
                     this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
+                }
+                break;
+                case MessageType.EDIT_STORE: 
+                {
+                    EditStorePayload pEdit = (EditStorePayload)message.payload;
+                    
+                    if(pEdit.restockValue != null) {
+                        this.worker.RestockProduct(pEdit.storeName, pEdit.productName, pEdit.restockValue);
+                    }
+
+                    if(pEdit.isCustomerVisible != null) {
+                        this.worker.ToggleProductVisibility(pEdit.storeName, pEdit.productName, pEdit.isCustomerVisible);
+                    }
                 }
                 break;
                 default:
