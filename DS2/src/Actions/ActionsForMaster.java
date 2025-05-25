@@ -5,11 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.PseudoColumnUsage;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import Primitives.*;
 import Primitives.Payloads.AddStorePayload;
+import Primitives.Payloads.EditStorePayload;
 import Primitives.Payloads.FilterMasterPayload;
 import Primitives.Payloads.FilterWorkerPayload;
 import Primitives.Payloads.FoodCategoriesPayload;
@@ -397,6 +399,21 @@ public class ActionsForMaster extends ActionsForNode {
                     for(HostData hostData : workerHostDatas) {
                         this.SendMessageToNode(hostData, workerMessage);
                     }
+                }
+                break;
+                case MessageType.EDIT_STORE:
+                {
+                    EditStorePayload pEdit = (EditStorePayload)message.payload;
+
+                    int ID = this.master.StoreNameToWorkerID(pEdit.storeName);
+                
+                    ArrayList<HostData> workerHostDatas = this.master.GetWorkerHostDatas();
+
+                    Message workerMessage = new Message();
+                    workerMessage.type = MessageType.EDIT_STORE;
+                    workerMessage.payload = pEdit;
+
+                    this.SendMessageToNode(workerHostDatas.get(ID), workerMessage);
                 }
                 break;
                 default:

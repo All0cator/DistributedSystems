@@ -7,6 +7,8 @@ import Primitives.MessageType;
 import Primitives.Product;
 import Primitives.Store;
 import Primitives.Payloads.AddStorePayload;
+import Primitives.Payloads.EditStorePayload;
+import Primitives.Payloads.GetStorePayload;
 import Primitives.Payloads.HostDataPayload;
 import Primitives.Payloads.StoresPayload;
 import Primitives.Payloads.TotalRevenuePayload;
@@ -20,6 +22,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -254,8 +257,83 @@ public class ManagerApp extends Node {
                     break;
                     case 3: // Edit Store
                     {
-                        // Restock
-                        // Add/Remove Product
+                        // Choose store
+                        Store[] stores = this.GetCopyStores();
+                        
+                        if(stores == null) break;
+                        if(stores.length == 0) break;
+                        
+                        System.out.println("Choose Store to Edit(-1 to cancel): ");
+
+                        for(int i = 0; i < stores.length; ++i) {
+                            System.out.printf("%d) %s\n", i, stores[i].GetName());
+                        }
+
+                        int choice1;
+                        do {
+                            choice1 = Integer.parseInt(sc.nextLine());
+                        } while(choice1 < -1 || choice1 >= stores.length);
+
+                        if(choice1 == -1) break;
+
+                        Store store = stores[choice1];                        
+
+                        // Choose product
+
+                        System.out.println("Choose a product to Edit(-1 to cancel): ");
+
+                        ArrayList<Product> storeProducts = store.GetProducts(false); 
+
+                        for(int i = 0; i < storeProducts.size(); ++i) {
+                            System.out.printf("%d) %s\n", i, storeProducts.get(i).GetName());
+                        }
+
+                        int choice2;
+                        do {
+                            choice2 = Integer.parseInt(sc.nextLine());
+                        } while(choice2 < -1 || choice2 >= storeProducts.size());
+
+                        if(choice2 == -1) break;
+
+                        Product product = storeProducts.get(choice2);
+
+                        System.out.println("Choose an option(-1 to cancel): ");
+                        System.out.println("0) Restock");
+                        System.out.println("1) Add Product");
+                        System.out.println("2) Remove Product");
+
+                        int choice3;
+                        do {
+                            choice3 = Integer.parseInt(sc.nextLine());
+                        } while(choice3 < -1 || choice3 > 2);
+
+                        if(choice3 == -1) break;
+
+                        Integer restockValue = null;
+                        Boolean isCustomerVisible = null; 
+
+                        if(choice3 == 0) {
+                            // Restock
+                            System.out.println("Input Restock value (negative value to remove amount):");
+                            restockValue = Integer.parseInt(sc.nextLine());
+                        } else if(choice3 == 1) {
+                            // Add Product
+                            isCustomerVisible = true;
+                        } else if(choice3 == 2) {
+                            // Remove Product
+                            isCustomerVisible = false;
+                        }
+
+                        Message masterMessage = new Message();
+                        masterMessage.type = MessageType.EDIT_STORE;
+                        EditStorePayload pEdit = new EditStorePayload();
+                        masterMessage.payload = pEdit;
+                        pEdit.storeName = store.GetName();
+                        pEdit.productName = product.GetName();
+                        pEdit.restockValue = restockValue;
+                        pEdit.isCustomerVisible = isCustomerVisible;
+
+                        this.actions.SendMessageToNode(this.masterHostData, masterMessage);
                     }
                     break;
                     case 4: // Query Revenue Statistics
