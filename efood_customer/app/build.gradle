@@ -23,13 +23,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 }
 
 dependencies {
-
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -38,3 +37,13 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 }
+
+
+/*[libraries]
+appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
+material = { module = "com.google.android.material:material", version = "1.12.0" }
+activity = { module = "androidx.activity:activity-ktx", version = "1.10.1" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.2.1" }
+junit = { module = "junit:junit", version = "4.13.2" }
+ext-junit = { module = "androidx.test.ext:junit", version = "1.2.1" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.6.1" } */

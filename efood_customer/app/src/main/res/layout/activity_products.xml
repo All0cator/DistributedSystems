@@ -22,7 +22,35 @@
         app:layout_constraintVertical_bias="0.114" />
 
     <Button
+        android:id="@+id/b_main_exit"
+        android:layout_width="225dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/enter_button_colour"
+        android:text="Exit"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/b_main_grade_store" />
+
+    <Button
         android:id="@+id/b_main_refresh"
+        android:layout_width="225dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/enter_button_colour"
+        android:text="Refresh"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+
+    <Button
+        android:id="@+id/b_main_refresh2"
         android:layout_width="225dp"
         android:layout_height="45dp"
         android:layout_marginTop="24dp"

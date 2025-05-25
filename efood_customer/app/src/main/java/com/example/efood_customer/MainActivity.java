@@ -9,15 +9,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    private Button enterButton;
-    private EditText longitude;
-    private EditText latitude;
-    private TextView errorMessage;
+
+    private Button buttonRefresh;
+    private Button buttonSearchStores;
+    private Button buttonNewPurchase;
+    private Button buttonGradeStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,27 +32,56 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        enterButton = findViewById(R.id.enter);
-        longitude = findViewById(R.id.longitude);
-        latitude = findViewById(R.id.latitude);
-        errorMessage = findViewById(R.id.error_text);
+        buttonRefresh = findViewById(R.id.b_main_refresh);
+        buttonSearchStores = findViewById(R.id.b_main_search_stores);
+        buttonNewPurchase = findViewById(R.id.b_main_new_purchase);
+        buttonGradeStore = findViewById(R.id.b_main_grade_store);
+
+        buttonRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Refresh();
+            }
+        });
+
+        buttonSearchStores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SearchStores();
+            }
+        });
+
+        buttonNewPurchase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NewPurchase();
+            }
+        });
+
+        buttonGradeStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GradeStore();
+            }
+        });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Reset username and password fields
-        longitude.setText("");
-        latitude.setText("");
-
-        // Reset error message
-        errorMessage.setText(""); // Hides the error message
+    public void Refresh() {
+        // Refersh request
     }
 
-    @Override
-    public void navigateToCustomerHomeScreen(){
-        //Intent intent = new Intent(this, ...);
-        //startActivity(intent);
+    public void SearchStores() {
+        Intent intent = new Intent(this, SearchStoresActivity.class);
+        startActivity(intent);
+    }
+
+    public void NewPurchase() {
+        Intent intent = new Intent(this, NewPurchaseActivity.class);
+        startActivity(intent);
+    }
+
+    public void GradeStore() {
+        Intent intent = new Intent(this, GradeStoreActivity.class);
+        startActivity(intent);
     }
 }
