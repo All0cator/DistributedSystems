@@ -21,6 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".GradeStoreActivity" />
+        <activity android:name=".NewPurchaseActivity" />
+        <activity android:name=".ProductsActivity" />
+        <activity android:name=".SearchStoresActivity" />
     </application>
 
 </manifest>

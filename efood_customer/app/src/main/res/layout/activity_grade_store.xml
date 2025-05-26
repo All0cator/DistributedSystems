@@ -13,7 +13,7 @@
         android:layout_height="68dp"
         android:background="@drawable/login_page_background_colour"
         android:gravity="center"
-        android:text="Welcome Customer!"
+        android:text="Grade"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,59 +22,17 @@
         app:layout_constraintVertical_bias="0.114" />
 
     <Button
-        android:id="@+id/b_main_refresh"
+        android:id="@+id/b_grade_store_back"
         android:layout_width="225dp"
         android:layout_height="45dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/enter_button_colour"
-        android:text="Refresh"
+        android:text="Back"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
-
-    <Button
-        android:id="@+id/b_main_search_stores"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/enter_button_colour"
-        android:text="Search Stores"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_main_refresh" />
-
-    <Button
-        android:id="@+id/b_main_new_purchase"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/enter_button_colour"
-        android:text="New Purchase"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_main_search_stores" />
-
-    <Button
-        android:id="@+id/b_main_grade_store"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/enter_button_colour"
-        android:text="Grade Store"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_main_new_purchase" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
