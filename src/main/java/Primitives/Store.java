@@ -158,13 +158,25 @@ public class Store implements Serializable {
         return true;
     }
 
-    public synchronized void Restock(String productName, int amount) {
+    public synchronized int Restock(String productName, int amount) {
 
         Product p = this.nameToProduct.get(productName);
 
         if(p != null) {
-            p.Restock(amount);
+            return p.Restock(amount);
         }
+
+        return -1;
+    }
+
+    public synchronized Boolean ToggleVisibility(String productName, boolean isCustomerVisible) {
+        Product p = this.nameToProduct.get(productName);
+
+        if(p != null) {
+            return p.ToggleProductCustomerVisibility(isCustomerVisible);
+        }
+
+        return null;
     }
 
     public synchronized void AddProduct(Product product) {

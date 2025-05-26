@@ -8,12 +8,12 @@ import java.util.Set;
 public class AtomicMS {
     private Set<String> foodCategories;
     private Set<String> productTypes;
-    private Set<String> storeNames; 
+    private ArrayList<Store> stores; 
 
     public AtomicMS() {
         this.foodCategories = new HashSet<String>();
         this.productTypes = new HashSet<String>();
-        this.storeNames = new HashSet<String>();
+        this.stores = new ArrayList<Store>();
     }
 
     public synchronized void AddFoodCategory(String foodCategory) {
@@ -24,8 +24,8 @@ public class AtomicMS {
         this.productTypes.add(productType);
     }
 
-    public synchronized void AddStoreName(String storeName) {
-        this.storeNames.add(storeName);
+    public synchronized void AddStore(Store store) {
+        this.stores.add(store);
     }
 
     public synchronized void GetFoodCategories(Set<String> foodCategories) {
@@ -36,8 +36,8 @@ public class AtomicMS {
         productTypes.addAll(this.productTypes);
     }
 
-    public synchronized void GetStoreNames(Set<String> storeNames) {
-        storeNames.addAll(this.storeNames);
+    public synchronized void GetStores(ArrayList<Store> stores) {
+        stores.addAll(this.stores);
     }
 
     public synchronized void SetFoodCategories(Set<String> foodCategories) {
@@ -48,7 +48,7 @@ public class AtomicMS {
         this.productTypes = productTypes;
     }
 
-    public synchronized void SetStoreNames(Set<String> storeNames) {
-        this.storeNames = storeNames;
+    public synchronized void SetStores(ArrayList<Store> stores) {
+        this.stores = stores;
     }
 }

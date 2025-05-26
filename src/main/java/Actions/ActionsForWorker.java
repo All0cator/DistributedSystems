@@ -37,6 +37,8 @@ import Primitives.Payloads.StoresPayload;
 import Primitives.Payloads.TotalRevenueRequestPayload;
 import Primitives.Payloads.WorkerRegistrationPayload;
 
+import static Primitives.MessageType.*;
+
 public class ActionsForWorker extends ActionsForNode {
     private Worker worker;
 
@@ -58,7 +60,7 @@ public class ActionsForWorker extends ActionsForNode {
         if(worker.GetReducerHostData().GetPort() < 0) {
             // Host discovery
             Message hostDiscoveryMessage = new Message();
-            hostDiscoveryMessage.type = MessageType.HOST_DISCOVERY;
+            hostDiscoveryMessage.type = HOST_DISCOVERY;
             HostDiscoveryRequestPayload pDiscovery = new HostDiscoveryRequestPayload();
             hostDiscoveryMessage.payload = pDiscovery;
             pDiscovery.isWorkerNode = false;
@@ -118,7 +120,7 @@ public class ActionsForWorker extends ActionsForNode {
                     // Assume we found Reducer
 
                     Message reduceMessage = new Message();
-                    reduceMessage.type = MessageType.REDUCE_TOTAL_COUNT;
+                    reduceMessage.type = REDUCE_TOTAL_COUNT;
                     ReduceTotalCountPayload pReduceTotalCount = new ReduceTotalCountPayload();
                     reduceMessage.payload = pReduceTotalCount;
                     pReduceTotalCount.mapID = ((MapTotalCountPayload)message.payload).mapID;
@@ -128,7 +130,7 @@ public class ActionsForWorker extends ActionsForNode {
                     SendMessageToNode(this.worker.GetReducerHostData(), reduceMessage);
                 }
                 break;
-                case MessageType.FILTER:
+                case FILTER:
                 {
                     FindReducerHostData();
 
@@ -157,7 +159,7 @@ public class ActionsForWorker extends ActionsForNode {
                     }
 
                     Message reduceMessage = new Message();
-                    reduceMessage.type = MessageType.FILTER;
+                    reduceMessage.type = FILTER;
                     StoresPayload pStores = new StoresPayload();
                     reduceMessage.payload = pStores;
                     pStores.stores = stores;
@@ -167,7 +169,7 @@ public class ActionsForWorker extends ActionsForNode {
                     SendMessageToNode(this.worker.GetReducerHostData(), reduceMessage);
                 }
                 break;
-                case MessageType.RATE:
+                case RATE:
                 {
                     RatePayload pRate = (RatePayload)message.payload;
                     boolean successful = this.worker.RateStore(pRate.storeName, pRate.noOfStars);
@@ -176,7 +178,7 @@ public class ActionsForWorker extends ActionsForNode {
                     "Failed to Rate Store with name: " + pRate.storeName;
                     
                     Message masterResponse = new Message();
-                    masterResponse.type = MessageType.RESULT;
+                    masterResponse.type = RESULT;
                     ResultPayload pRes = new ResultPayload();
                     masterResponse.payload = pRes;
 
@@ -188,7 +190,7 @@ public class ActionsForWorker extends ActionsForNode {
                     SendMessageToNode(masterHostData, masterResponse);
                 }
                 break;
-                case MessageType.PURCHASE:
+                case PURCHASE:
                 {
                     PurchasePayload pPurchase = (PurchasePayload)message.payload;
                     boolean success = this.worker.PurchaseFromStore(pPurchase.purchase);
@@ -196,7 +198,7 @@ public class ActionsForWorker extends ActionsForNode {
                     String result = success ? "Succesfully made Purchase: " + pPurchase.purchase : "Failed to make Purchase: " + pPurchase.purchase;
 
                     Message masterResponse = new Message();
-                    masterResponse.type = MessageType.RESULT;
+                    masterResponse.type = RESULT;
                     ResultPayload pResult = new ResultPayload();
                     masterResponse.payload = pResult;
 
@@ -208,14 +210,14 @@ public class ActionsForWorker extends ActionsForNode {
                     SendMessageToNode(masterHostData, masterResponse);
                 }
                 break;
-                case MessageType.REFRESH_MANAGER:
+                case REFRESH_MANAGER:
                 {
                     FindReducerHostData();
 
                     RequestDataPayload pRequestData = (RequestDataPayload)message.payload;
 
                     Message reduceMessage = new Message();
-                    reduceMessage.type = MessageType.REDUCE_MANAGER_STATE;
+                    reduceMessage.type = REDUCE_MANAGER_STATE;
                     ManagerStatePayload pState = new ManagerStatePayload();
                     reduceMessage.payload = pState;
 
@@ -239,7 +241,7 @@ public class ActionsForWorker extends ActionsForNode {
                     
                     
                     Message reducerMessage = new Message();
-                    reducerMessage.type = MessageType.REDUCE_FOOD_CATEGORIES;
+                    reducerMessage.type = REDUCE_FOOD_CATEGORIES;
                     FoodCategoriesPayload pFood = new FoodCategoriesPayload();
                     reducerMessage.payload = pFood;
 
@@ -252,12 +254,12 @@ public class ActionsForWorker extends ActionsForNode {
                     this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
                 }
                 break;
-                case MessageType.ADD_STORE:
+                case ADD_STORE:
                 {
                     AddStorePayload pStore = (AddStorePayload)message.payload;
 
                     Message masterMessage = new Message();
-                    masterMessage.type = MessageType.ADD_STORE_ARRIVAL;
+                    masterMessage.type = ADD_STORE_ARRIVAL;
                     masterMessage.payload = null;
 
                     if(this.worker.AddStore(pStore.store)) {
@@ -267,7 +269,7 @@ public class ActionsForWorker extends ActionsForNode {
                     this.SendMessageToNode(this.worker.GetMasterHostData(), masterMessage);
                 }
                 break;
-                case MessageType.TOTAL_REVENUE_PER_FOOD_CATEGORY:
+                case TOTAL_REVENUE_PER_FOOD_CATEGORY:
                 {
                     FindReducerHostData();
 
@@ -276,7 +278,7 @@ public class ActionsForWorker extends ActionsForNode {
                     HashMap<String, Float> storeNameToTotalRevenue = this.worker.GetTotalRevenuePerFoodCategory(pRequest.type);
 
                     Message reducerMessage = new Message();
-                    reducerMessage.type = MessageType.REDUCE_TOTAL_REVENUE;
+                    reducerMessage.type = REDUCE_TOTAL_REVENUE;
                     ReduceTotalRevenuePayload pReduce = new ReduceTotalRevenuePayload();
                     reducerMessage.payload = pReduce;
 
@@ -287,7 +289,7 @@ public class ActionsForWorker extends ActionsForNode {
                     this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
                 }
                 break;
-                case MessageType.TOTAL_REVENUE_PER_PRODUCT_TYPE:
+                case TOTAL_REVENUE_PER_PRODUCT_TYPE:
                 {
                     FindReducerHostData();
 
@@ -296,7 +298,7 @@ public class ActionsForWorker extends ActionsForNode {
                     HashMap<String, Float> storeNameToTotalRevenue = this.worker.GetTotalRevenuePerProductType(pRequest.type);
 
                     Message reducerMessage = new Message();
-                    reducerMessage.type = MessageType.REDUCE_TOTAL_REVENUE;
+                    reducerMessage.type = REDUCE_TOTAL_REVENUE;
                     ReduceTotalRevenuePayload pReduce = new ReduceTotalRevenuePayload();
                     reducerMessage.payload = pReduce;
 
