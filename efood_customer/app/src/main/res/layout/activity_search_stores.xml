@@ -7,6 +7,36 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/b_search_stores_back4"
+        android:layout_width="225dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="476dp"
+        android:background="@drawable/enter_button_colour"
+        android:text="New Purchase"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toTopOf="@+id/b_search_stores_back3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+
+    <Button
+        android:id="@+id/b_search_stores_back3"
+        android:layout_width="225dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="544dp"
+        android:background="@drawable/enter_button_colour"
+        android:text="Grade store"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+
     <TextView
         android:id="@+id/t_main_greetings"
         android:layout_width="245dp"
@@ -19,20 +49,72 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.114" />
+        app:layout_constraintVertical_bias="0.057" />
+
+    <Spinner
+        android:id="@+id/spinner2"
+        android:layout_width="118dp"
+        android:layout_height="38dp"
+        tools:layout_editor_absoluteX="146dp"
+        tools:layout_editor_absoluteY="129dp" />
 
     <Button
         android:id="@+id/b_search_stores_back"
         android:layout_width="225dp"
         android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/enter_button_colour"
+        android:text="Search"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.086"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="118dp"
+        android:layout_height="38dp"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="129dp" />
+
+    <ListView
+        android:layout_width="318dp"
+        android:layout_height="321dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.592" />
+
+    <Button
+        android:id="@+id/b_search_stores_back2"
+        android:layout_width="138dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/enter_button_colour"
         android:text="Back"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.941"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Spinner
+        android:id="@+id/spinner3"
+        android:layout_width="114dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="131dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

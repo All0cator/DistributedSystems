@@ -401,7 +401,7 @@ public class ActionsForMaster extends ActionsForNode {
                     }
                 }
                 break;
-                case MessageType.EDIT_STORE:
+                case EDIT_STORE:
                 {
                     EditStorePayload pEdit = (EditStorePayload)message.payload;
 

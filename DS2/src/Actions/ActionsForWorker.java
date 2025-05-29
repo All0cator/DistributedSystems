@@ -309,7 +309,7 @@ public class ActionsForWorker extends ActionsForNode {
                     this.SendMessageToNode(this.worker.GetReducerHostData(), reducerMessage);
                 }
                 break;
-                case MessageType.EDIT_STORE: 
+                case EDIT_STORE:
                 {
                     EditStorePayload pEdit = (EditStorePayload)message.payload;
                     

@@ -7,32 +7,63 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/b_grade_store_back2"
+        android:layout_width="225dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="248dp"
+        android:background="@drawable/enter_button_colour"
+        android:text="Done"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toTopOf="@+id/b_grade_store_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.548"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+
     <TextView
         android:id="@+id/t_main_greetings"
         android:layout_width="245dp"
         android:layout_height="68dp"
         android:background="@drawable/login_page_background_colour"
         android:gravity="center"
-        android:text="Grade"
+        android:text="Grade Store"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.56"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.114" />
+        app:layout_constraintVertical_bias="0.079" />
 
     <Button
         android:id="@+id/b_grade_store_back"
         android:layout_width="225dp"
         android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="328dp"
         android:background="@drawable/enter_button_colour"
         android:text="Back"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.548"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="99dp"
+        app:layout_constraintBottom_toTopOf="@+id/b_grade_store_back2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.543"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
+        app:layout_constraintVertical_bias="0.164" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
