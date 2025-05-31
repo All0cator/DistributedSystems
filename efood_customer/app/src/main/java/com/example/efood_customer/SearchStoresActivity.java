@@ -30,6 +30,9 @@ public class SearchStoresActivity extends AppCompatActivity {
 
     private ListView listView;
     private Button buttonBack;
+    private Button buttonGradeStore;
+    private Button buttonNewPurchase;
+    private Button buttonSearch;
     private Handler handler;
     ArrayList<Store> items = new ArrayList<>();
 
@@ -55,8 +58,32 @@ public class SearchStoresActivity extends AppCompatActivity {
         });
 
         buttonBack = findViewById(R.id.b_search_stores_back);
+        buttonSearch = findViewById(R.id.b_search_stores_search);
+        buttonGradeStore = findViewById(R.id.b_search_stores_grade_store);
+        buttonNewPurchase = findViewById(R.id.b_search_stores_new_purchase);
 
         buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Back();
+            }
+        });
+
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Back();
+            }
+        });
+
+        buttonGradeStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Back();
+            }
+        });
+
+        buttonNewPurchase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Back();

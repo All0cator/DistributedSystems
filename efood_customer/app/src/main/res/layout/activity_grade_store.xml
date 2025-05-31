@@ -8,9 +8,9 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/b_grade_store_back2"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
+        android:id="@+id/b_grade_store_done"
+        android:layout_width="223dp"
+        android:layout_height="51dp"
         android:layout_marginTop="248dp"
         android:background="@drawable/enter_button_colour"
         android:text="Done"
@@ -40,8 +40,8 @@
 
     <Button
         android:id="@+id/b_grade_store_back"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
+        android:layout_width="229dp"
+        android:layout_height="52dp"
         android:layout_marginTop="328dp"
         android:background="@drawable/enter_button_colour"
         android:text="Back"
@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="99dp"
-        app:layout_constraintBottom_toTopOf="@+id/b_grade_store_back2"
+        app:layout_constraintBottom_toTopOf="@+id/b_grade_store_done"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.543"
         app:layout_constraintStart_toStartOf="parent"

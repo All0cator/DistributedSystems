@@ -23,58 +23,66 @@
 
     <Button
         android:id="@+id/b_main_refresh"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="226dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/enter_button_colour"
         android:text="Refresh"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/b_main_search_stores"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="226dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/enter_button_colour"
         android:text="Search Stores"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_main_refresh" />
+        app:layout_constraintTop_toBottomOf="@+id/b_main_refresh"
+        app:layout_constraintVertical_bias="0.142" />
 
     <Button
         android:id="@+id/b_main_new_purchase"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="219dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="64dp"
         android:background="@drawable/enter_button_colour"
         android:text="New Purchase"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_main_search_stores" />
+        app:layout_constraintTop_toBottomOf="@+id/b_main_search_stores"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/b_main_grade_store"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
+        android:layout_width="232dp"
+        android:layout_height="61dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/enter_button_colour"
         android:text="Grade Store"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_main_new_purchase" />
+        app:layout_constraintTop_toBottomOf="@+id/b_main_new_purchase"
+        app:layout_constraintVertical_bias="0.228" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,24 +8,26 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/b_search_stores_back4"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="476dp"
+        android:id="@+id/b_search_stores_new_purchase"
+        android:layout_width="227dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="492dp"
         android:background="@drawable/enter_button_colour"
         android:text="New Purchase"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:backgroundTint="@null"
-        app:layout_constraintBottom_toTopOf="@+id/b_search_stores_back3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
+        app:layout_constraintVertical_bias="0.019" />
 
     <Button
-        android:id="@+id/b_search_stores_back3"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
+        android:id="@+id/b_search_stores_grade_store"
+        android:layout_width="228dp"
+        android:layout_height="54dp"
         android:layout_marginTop="544dp"
         android:background="@drawable/enter_button_colour"
         android:text="Grade store"
@@ -34,8 +36,10 @@
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings" />
+        app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
+        app:layout_constraintVertical_bias="0.387" />
 
     <TextView
         android:id="@+id/t_main_greetings"
@@ -49,19 +53,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057" />
+        app:layout_constraintVertical_bias="0.024" />
 
     <Spinner
-        android:id="@+id/spinner2"
-        android:layout_width="118dp"
-        android:layout_height="38dp"
-        tools:layout_editor_absoluteX="146dp"
-        tools:layout_editor_absoluteY="129dp" />
+        android:id="@+id/stars_spinner"
+        android:layout_width="122dp"
+        android:layout_height="44dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.157" />
 
     <Button
-        android:id="@+id/b_search_stores_back"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
+        android:id="@+id/b_search_stores_search"
+        android:layout_width="232dp"
+        android:layout_height="51dp"
         android:layout_marginTop="80dp"
         android:background="@drawable/enter_button_colour"
         android:text="Search"
@@ -70,19 +78,24 @@
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.086"
+        app:layout_constraintHorizontal_bias="0.089"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.025" />
 
     <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="118dp"
-        android:layout_height="38dp"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="129dp" />
+        android:id="@+id/food_category_spinner"
+        android:layout_width="126dp"
+        android:layout_height="41dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/prices_spinner"
+        app:layout_constraintHorizontal_bias="0.017"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.162" />
 
     <ListView
+        android:id="@+id/stores_list_view"
         android:layout_width="318dp"
         android:layout_height="321dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -93,9 +106,9 @@
         app:layout_constraintVertical_bias="0.592" />
 
     <Button
-        android:id="@+id/b_search_stores_back2"
-        android:layout_width="138dp"
-        android:layout_height="43dp"
+        android:id="@+id/b_search_stores_back"
+        android:layout_width="137dp"
+        android:layout_height="50dp"
         android:layout_marginTop="80dp"
         android:background="@drawable/enter_button_colour"
         android:text="Back"
@@ -107,14 +120,17 @@
         app:layout_constraintHorizontal_bias="0.941"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/t_main_greetings"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.025" />
 
     <Spinner
-        android:id="@+id/spinner3"
-        android:layout_width="114dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="20dp"
+        android:id="@+id/prices_spinner"
+        android:layout_width="127dp"
+        android:layout_height="45dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="131dp" />
+        app:layout_constraintHorizontal_bias="0.975"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.157" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
