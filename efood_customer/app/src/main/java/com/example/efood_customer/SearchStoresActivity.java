@@ -1,7 +1,9 @@
 package com.example.efood_customer;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -14,13 +16,13 @@ import androidx.annotation.NonNull;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.efood_customer.Primitives.MyRunnable;
 import com.example.efood_customer.Primitives.Store;
 
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class SearchStoresActivity extends AppCompatActivity {
     private Button buttonNewPurchase;
     private Button buttonSearch;
     private Handler handler;
+    private Store selectedStore = null;
     ArrayList<Store> items = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,9 @@ public class SearchStoresActivity extends AppCompatActivity {
             }
         });
 
+
+        new Thread(new MyRunnable(handler,items)).start(); //maybe this code snippet isn't supposed to be here
+
         buttonBack = findViewById(R.id.b_search_stores_back);
         buttonSearch = findViewById(R.id.b_search_stores_search);
         buttonGradeStore = findViewById(R.id.b_search_stores_grade_store);
@@ -72,6 +78,10 @@ public class SearchStoresActivity extends AppCompatActivity {
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //...
+                //search()
+                //...
+
                 Back();
             }
         });
@@ -89,6 +99,57 @@ public class SearchStoresActivity extends AppCompatActivity {
                 Back();
             }
         });
+
+//        btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                new MyThread(handler,items).start();
+//            }
+//        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                selectedStore = items.get(i);
+
+                Toast.makeText(SearchStoresActivity.this, "Clicked: "+selectedStore.GetName(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+//        listView.setAdapter(new BaseAdapter() {
+//            @Override
+//            public int getCount() {
+//                return items.size();
+//            }
+//
+//            @Override
+//            public Object getItem(int i) {
+//                return items.get(i);
+//            }
+//
+//            @Override
+//            public long getItemId(int i) {
+//                return i;
+//            }
+
+
+//            @Override
+//            public View getView(int i, View view, ViewGroup viewGroup) {
+//
+//                View itemView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.stores_list_view,viewGroup,false);
+//
+//                TextView title = itemView.findViewById(R.id.title);
+//
+//                TextView text = itemView.findViewById(R.id.text);
+//
+//                title.setText(items.get(i).getName());
+//
+//                text.setText(items.get(i).getText());
+//
+//                return itemView;
+//            }
+//        });
     }
 
     public void Back() {

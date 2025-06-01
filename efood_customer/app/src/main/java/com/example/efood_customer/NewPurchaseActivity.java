@@ -1,18 +1,26 @@
 package com.example.efood_customer;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.efood_customer.Primitives.Product;
+import com.example.efood_customer.Primitives.Store;
 
 import java.util.ArrayList;
 
@@ -24,6 +32,8 @@ public class NewPurchaseActivity extends AppCompatActivity {
     private Button buttonAddProduct;
     private Button addProduct;
     private EditText quantity;
+    private Handler handler;
+    private ArrayList<Product> items = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +52,17 @@ public class NewPurchaseActivity extends AppCompatActivity {
         buttonComplete = findViewById(R.id.b_new_purchase_complete);
         buttonAddProduct = findViewById(R.id.b_new_purchase_add_product);
         lv = findViewById(R.id.listView);
+
+        handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message message) {
+                if (message.what == 1){
+                    Toast.makeText(NewPurchaseActivity.this, "Connection OK! "+items.size(), Toast.LENGTH_SHORT).show();
+                    ((BaseAdapter)lv.getAdapter()).notifyDataSetChanged();
+                }
+                return false;
+            }
+        });
 
 //        ArrayAdapter<String> adapter = new ArrayAdapter<>(
 //                this,
@@ -79,6 +100,8 @@ public class NewPurchaseActivity extends AppCompatActivity {
         buttonComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //...
+                //buy()
                 //...
                 Back();
             }
