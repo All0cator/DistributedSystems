@@ -49,6 +49,8 @@ public class SearchStoresActivity extends AppCompatActivity {
             return insets;
         });
 
+//        new Thread(new MyRunnable(handler,items)).start(); //maybe this code snippet isn't supposed to be here
+
         handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
             @Override
             public boolean handleMessage(@NonNull Message message) {
@@ -59,9 +61,6 @@ public class SearchStoresActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
-        new Thread(new MyRunnable(handler,items)).start(); //maybe this code snippet isn't supposed to be here
 
         buttonBack = findViewById(R.id.b_search_stores_back);
         buttonSearch = findViewById(R.id.b_search_stores_search);
@@ -132,14 +131,14 @@ public class SearchStoresActivity extends AppCompatActivity {
 //            public long getItemId(int i) {
 //                return i;
 //            }
-
-
+//
+//
 //            @Override
 //            public View getView(int i, View view, ViewGroup viewGroup) {
 //
-//                View itemView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.stores_list_view,viewGroup,false);
+//                View itemView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_search_stores,viewGroup,false);
 //
-//                TextView title = itemView.findViewById(R.id.title);
+//                TextView name = itemView.findViewById(R.id.);
 //
 //                TextView text = itemView.findViewById(R.id.text);
 //
